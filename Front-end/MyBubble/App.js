@@ -1,6 +1,13 @@
+import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
+import EntryPoint from './EntryPoint';
+
+const Stack = createStackNavigator();
+
 const App = () => {const [user, setUser] = useState({})
 useEffect(() => {
     GoogleSignin.configure({
@@ -67,11 +74,14 @@ useEffect(() => {
           size={GoogleSigninButton.Size.Wide}
           color={GoogleSigninButton.Color.Dark}
           onPress={signIn}
-        /> :
-        <TouchableOpacity onPress={signOut}>
-          <Text>Logout</Text>
-        </TouchableOpacity>
-      }
+        /> :  
+        <EntryPoint></EntryPoint>
+      //   <TouchableOpacity onPress={signOut}>
+      //     <Text>Logout</Text>
+      //   </TouchableOpacity>
+      // 
+    }
+
     </View>
   )
 }
