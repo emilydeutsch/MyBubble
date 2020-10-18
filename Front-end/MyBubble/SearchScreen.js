@@ -1,20 +1,41 @@
 import * as React from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet} from 'react-native';
+import {RadioButton} from 'react-native-radio-button';
 import { State } from 'react-native-gesture-handler';
 
 class SearchScreen extends React.Component {
 
-    constructor(props) {
+  constructor(props) {
 
       super(props);
 
       this.state = {
         searchResult : "",
+        data : '',
       };      
+    }
+
+    componentDidMount = (req) =>{
+      fetch(req, {
+        method: 'GET'
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        this.setState({
+          data: responseJson
+        })
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
 
     searchSubmit = (text) => {
       
+      const request = 'https://example.com/data/'.concat(text);
+
+      this.componentDidMount(request);
 
       const textArr = text.split("\n");
       
