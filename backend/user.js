@@ -4,7 +4,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const userModel = require('./schema');
 
-const url = 'mongodb://localhost/project';
+const url = 'mongodb://localhost:27018/project';
 mongoose.connect(url);
 
 /* Puts a new user in the database, user must
