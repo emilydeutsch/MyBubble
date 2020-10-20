@@ -11,6 +11,7 @@ class SettingsScreen extends React.Component{
     this.state = {
       
       currentHealth : 'healthy',
+      
     };      
   }
 

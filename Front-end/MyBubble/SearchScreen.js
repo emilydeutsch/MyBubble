@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet} from 'react-native';
-import {RadioButton} from 'react-native-radio-button';
 import { State } from 'react-native-gesture-handler';
 
 class SearchScreen extends React.Component {
@@ -10,8 +9,9 @@ class SearchScreen extends React.Component {
       super(props);
 
       this.state = {
-        searchResult : "",
+        searchResult : '',
         data : '',
+        selection : '',
       };      
     }
 
@@ -23,7 +23,7 @@ class SearchScreen extends React.Component {
       .then((responseJson) => {
         console.log(responseJson);
         this.setState({
-          data: responseJson
+          data: responseJson[0].firstName + " " + responseJson[0].lastName
         })
       })
       .catch((error) => {
@@ -33,15 +33,19 @@ class SearchScreen extends React.Component {
 
     searchSubmit = (text) => {
       
-      const request = 'https://example.com/data/'.concat(text);
+      const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?firstName='+text;
 
       this.componentDidMount(request);
 
-      const textArr = text.split("\n");
+      console.log(this.state.data);
+
+      var textArr = this.state.data;
       
       {/* Enter code here for searching database using text string */}
-      this.setState({searchResult : textArr});
-      console.log(this.state.searchResults);
+      this.setState(state =>({
+        searchResult : [state.data],
+      }) );
+      console.log(this.state.searchResult);
     }
 
     render(){
@@ -59,7 +63,9 @@ class SearchScreen extends React.Component {
         <View>
           <FlatList
             data = {this.state.searchResult}
-            renderItem={({item, index}) => {return <View><Text style={styles.item} >{item}</Text></View>}}
+            renderItem={({item, index}) => {
+              return <View><Text style={styles.item} >{item}</Text></View>}
+            }
             extraData = {this.state.searchResult}
           />
         </View>
