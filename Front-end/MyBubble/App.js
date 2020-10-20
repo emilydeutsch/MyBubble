@@ -22,6 +22,53 @@ useEffect(() => {
       const userInfo = await GoogleSignin.signIn();
       console.log(userInfo)
       setUser(userInfo)
+      //enter here a find email request
+      const email = userInfo.user.email;
+      const lastName = userInfo.user.familyName;
+      const firstName = userInfo.user.givenName;
+      var doPut= false;
+      var data = {
+          "lastName"  : lastName,
+          "firstName" : firstName
+      }; 
+      console.log(email);
+      console.log(lastName);
+      console.log(firstName);
+      //change to email 
+      const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?firstName='.concat(firstName);
+      fetch(request, {
+        method: 'GET',
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success get:', data);
+        if(data.length == 0){
+          doPut = true;
+        }
+      })
+      .catch((error) => {
+        console.error('Error get:', error);
+      });
+
+      //enter here put request
+      if (doPut){
+        const request2 = 'http://charlieserver.eastus.cloudapp.azure.com/user/newUser';
+        fetch(request2, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success put:', data);
+        })
+        .catch((error) => {
+          console.error('Error put:', error);
+        });
+    }
+
     } catch (error) {
       console.log('Message', error.message);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
