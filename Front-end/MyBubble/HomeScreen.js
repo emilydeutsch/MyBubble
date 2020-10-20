@@ -3,18 +3,43 @@ import { Button, View, Text, Dimensions, StyleSheet} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
+class HomeScreen extends React.Component{
+
+  constructor(props) {
+
+    super(props);
+
+    this.state = {
+      firstList : [],
+      secondList : [],
+      thirdList : [],
+    };     
+
+
+  }
+
+
+  render(){
+
+    const {navigation} = this.props;
+
     return (
       <View>
         
-        <Text style={styles.text}>First: #</Text>
-        <Text style={styles.text}>Second: #</Text>
-        <Text style={styles.text}>Third: #</Text>
+    <Text style={styles.text}>First: {this.state.firstList.length}</Text>
+        <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
+        <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
         <View style={styles.button}>
         <Button
           title="Add Connection"
-          onPress={() =>
+          onPress={() => {
+            this.props.navigation.navigate('Search', {
+              first: this.state.firstList,
+              second : this.state.secondList,
+              third : this.state.thirdList,
+            });
             navigation.navigate('Search')
+          }
           }
         />
         </View>
@@ -36,6 +61,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
     );
+        }
   };
 
   const styles = StyleSheet.create({

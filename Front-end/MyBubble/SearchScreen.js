@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet} from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import { State } from 'react-native-gesture-handler';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 
 class SearchScreen extends React.Component {
 
@@ -8,11 +10,23 @@ class SearchScreen extends React.Component {
 
       super(props);
 
+      this.addSelection = this.addSelection.bind(this);
+
       this.state = {
+        //first : this.props.navigation.getParam("first" , []),
         searchResult : '',
         data : '',
         selection : '',
       };      
+    }
+
+    
+
+    addSelection =(item) =>{
+      console.log("added: " + item);
+      this.setState((state) => ({
+        //first : state.first.push(item),
+      }))
     }
 
     componentDidMount = (req) =>{
@@ -39,7 +53,7 @@ class SearchScreen extends React.Component {
 
       console.log(this.state.data);
 
-      var textArr = this.state.data;
+      this.setState({data : text});
       
       {/* Enter code here for searching database using text string */}
       this.setState(state =>({
@@ -64,7 +78,9 @@ class SearchScreen extends React.Component {
           <FlatList
             data = {this.state.searchResult}
             renderItem={({item, index}) => {
-              return <View><Text style={styles.item} >{item}</Text></View>}
+              return <View><TouchableOpacity
+                onPress={() => this.addSelection(item)}
+              ><Text style={styles.item} >{item}</Text></TouchableOpacity></View>}
             }
             extraData = {this.state.searchResult}
           />
