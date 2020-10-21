@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const userModel = require('./schema');
 
-const url = 'mongodb://localhost/project';
+const url = 'mongodb://localhost/mybubbletest-1';
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.put('/user/newUser', (req,res) => {
     userFields = req.body;
-    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName});
+    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName, email: userFields.email});
     userModel.create(user, (err, result) => {
         if (err){
             res.writeHead(412);
@@ -25,7 +25,6 @@ app.put('/user/newUser', (req,res) => {
 });
 
 app.get('/user/find', (req, res) => {
-    console.log(req.query);
     userModel.find(req.query).exec((err, result) => {
         if(err) {
             res.writeHead(412);
@@ -38,57 +37,35 @@ app.get('/user/find', (req, res) => {
 });
 
 app.post('/user/addFirstConnection', async (req, res) => {
-    console.log(req.body);
-    if(!req.body.firstID || !req.body.secondID){
+    if(!req.body.firstID || !req.body.secondID || req.body.firstID == req.body.secondID){
         res.writeHead(412, {'Content-Type' : 'text-plain'});
-        res.write('Failed: Missing User IDs');
+        res.write('Failed: Missing User IDs or invalid');
         res.send();
         return;
     }
-    let firstUser = {foo: "bar"};
-    let firstUserFound = false;
-    firstUser = await userModel.find({_id: req.body.firstID})
-    /*
-    .exec((err, result) => {
-        if (err) {
-            res.writeHead(412);
-            res.write(err.toString());
-            res.send();
-            return;
+
+    let firstUser, secondUser;
+
+    try {
+        firstUser = await userModel.find({_id: req.body.firstID}).exec();
+        secondUser = await userModel.find({_id: req.body.secondID}).exec();
+
+        if(!firstUser[0].firstConnections.includes(secondUser[0]._id)){
+            firstUser[0].firstConnections.push(secondUser[0]._id);
+            secondUser[0].firstConnections.push(firstUser[0]._id);
         }
-        firstUser = result;
-        firstUserFound = true;
-    });
-    */ 
-    
-    if(firstUser.firstConnections.includes(secondID)) {
-        console.log(firstUser);
+        
+        await firstUser[0].save();
+        await secondUser[0].save();
+
+        res.json(firstUser.concat(secondUser));
+    }
+    catch(err){
         res.writeHead(412);
+        res.write(err.toString());
         res.send();
-        return;
     }
-    let secondUser;
-    let secondUserFound = false;
-    await userModel.find({_id: req.body.secondID})
-    /*
-    .exec((err, result) => {
-        if (err) {
-            res.writeHead(412);
-            res.write(err.toString());
-            res.send();
-            return;
-        }
-        secondUser = result;
-        secondUserFound = true;
-    }); 
-    */
-    firstUser.firstConnections.push(secondUser._id);
-    secondUser.firstConnections.push(firstUser._id);
-    await firstUser.save();
-    await secondUser.save();
-    res.writeHead(200);
-    res.send();
 });
 
 
-app.listen(80);
+app.listen(3000);

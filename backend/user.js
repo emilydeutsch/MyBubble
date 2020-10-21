@@ -4,7 +4,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const userModel = require('./schema');
 
-const url = 'mongodb://localhost:27018/project';
+const url = 'mongodb://localhost:27018/mybubbletest-1';
 mongoose.connect(url);
 
 /* Puts a new user in the database, user must
@@ -41,60 +41,34 @@ router.get('/findByQuery', (req, res) => {
 
 //Add conection by ID, respond only status code and success/failure message
 router.post('/addConnectionById', (req, res) => {
-    /*
-    const userIDs = req.body;
-
-    if(!userIDs.firstID || !userIDs.secondID){
+    if(!req.body.firstID || !req.body.secondID || req.body.firstID == req.body.secondID){
         res.writeHead(412, {'Content-Type' : 'text-plain'});
-        res.write('Failed: Missing User IDs');
+        res.write('Failed: Missing User IDs or invalid');
         res.send();
         return;
     }
 
-    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
-    client.connect(err => {
-        const db = client.db("MyBubble");
-        let user1List;
-        let user2List;
+    let firstUser, secondUser;
 
-        db.collection("users").findOne({id: userIDs.first}, (err, result) => {
-            console.log(result);
-            if (err) throw err;
-            user1List = result.firstConnections;
-        });
-        db.collection("users").findOne({id: userIDs.second}, (err, result) => {
-            if (err) throw err;
-            user2List = result.firstConnections;
-        });
+    try {
+        firstUser = await userModel.find({_id: req.body.firstID}).exec();
+        secondUser = await userModel.find({_id: req.body.secondID}).exec();
 
-        if(user1List.includes(userIDs.second)){
-            res.writeHead(412, {'Content-Type' : 'text-plain'});
-            res.write('Failed: Already Connected');
-            res.send();
-            client.close();
-            return;
+        if(!firstUser[0].firstConnections.includes(secondUser[0]._id)){
+            firstUser[0].firstConnections.push(secondUser[0]._id);
+            secondUser[0].firstConnections.push(firstUser[0]._id);
         }
+        
+        await firstUser[0].save();
+        await secondUser[0].save();
 
-        user1List.push(userIds.second);
-        let user1Mod = { $set: {firstConnections: user1List} };
-        user2List.push(userIds.first);
-        let user2Mod = { $set: {firstConnections: user2List} };
-
-        db.collection("users").updateOne({id:userIDs.first}, user1Mod, (err, res) => {
-            if (err) throw err;
-        });
-        db.collection("users").updateOne({id:userIDs.second}, user2Mod, (err, res) => {
-            if (err) throw err;
-        });
-
-        res.writeHead(200, {'Content-Type' : 'text-plain'});
-        res.write("Success");
+        res.json(firstUser.concat(secondUser));
+    }
+    catch(err){
+        res.writeHead(412);
+        res.write(err.toString());
         res.send();
-        client.close();
-    });
-    */
-   res.writeHead(412);
-   res.send();
+    }
 });
 
 
