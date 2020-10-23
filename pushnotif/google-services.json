@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "813231596835",
+    "firebase_url": "https://mybubble-ede11.firebaseio.com",
+    "project_id": "mybubble-ede11",
+    "storage_bucket": "mybubble-ede11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813231596835:android:0f0c24c05f4bfbd676d896",
+        "android_client_info": {
+          "package_name": "com.mybubble"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "813231596835-f6l6kd28cmrhg6vlt54dkequdea5e22t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKxk8J0FlnWRX4_Q0vsXvdA-TiCjMEWA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "813231596835-f6l6kd28cmrhg6vlt54dkequdea5e22t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
