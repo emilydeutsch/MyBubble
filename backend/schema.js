@@ -20,6 +20,10 @@ const userSchema = new Schema({
     creationDate: {
         type: Date,
         default: Date(),
+    },
+    covidFlag: {
+        type: Boolean,
+        default: false,
     }
 });
 
