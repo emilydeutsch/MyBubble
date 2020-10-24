@@ -40,7 +40,7 @@ router.get('/findByQuery', (req, res) => {
 });
 
 //Add conection by ID, respond only status code and success/failure message
-router.post('/addFirstConnection', (req, res) => {
+router.post('/addFirstConnection', async (req, res) => {
     if(!req.body.firstID || !req.body.secondID || req.body.firstID == req.body.secondID){
         res.writeHead(412, {'Content-Type' : 'text-plain'});
         res.write('Failed: Missing User IDs or invalid');
