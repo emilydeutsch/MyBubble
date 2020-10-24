@@ -14,7 +14,7 @@ Commands:
     Input: A JSON object representing a user, includes a firstName, lastName and a unique email
     Returns: A JSON object for the new user, includes all user fields and a unique ID 
 
-    Name: find, Req Type: GET
+    Name: findByQuery, Req Type: GET
     Input: Optionally some query, for example: ?firstName=jon&lastName=jones
     Returns: An array of JSON objects for all users that match the query. Sending no query returns
     an array of all users
