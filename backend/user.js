@@ -15,7 +15,7 @@ mongoose.connect(url);
  */
 router.put('/newUser', (req,res) => {
     userFields = req.body;
-    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName});
+    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName, email: userFields.email});
     userModel.create(user, (err, result) => {
         if (err){
             res.writeHead(412);
