@@ -8,6 +8,6 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json());
 
 app.use('/user', userRoute);
-app.set('/notifications', notificationRoute)
+//app.set('/notifications', notificationRoute)
 
 app.listen(80);
