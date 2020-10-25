@@ -1,6 +1,6 @@
 const express = require('express');
 const userRoute = require('./user.js');
-const notificationRoute = require('./notifications/server.js')
+const notificationRoute = require('/notifications/server')
 
 const app = express();
 
