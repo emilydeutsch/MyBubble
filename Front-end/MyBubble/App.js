@@ -2,8 +2,9 @@ import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Alert} from 'react-native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
+import messaging from '@react-native-firebase/messaging';
 import EntryPoint from './EntryPoint';
 import GLOBAL from './global'
 
@@ -18,12 +19,19 @@ GLOBAL.thirdContactArr = this;
 var doPut = false;
 
 useEffect(() => {
+
+  const unsubscribe = messaging().onMessage(async remoteMessage => {
+    Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  });
+
     GoogleSignin.configure({
       webClientId: '391210473174-j4bfvv60i9tgfaf1njmg5ud92rvtdbmt.apps.googleusercontent.com',
       offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
       forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
     });
-    isSignedIn()}, [])
+    isSignedIn()
+    return unsubscribe;
+    }, [])
     const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
