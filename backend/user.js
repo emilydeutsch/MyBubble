@@ -98,7 +98,7 @@ router.get('/getAllConnections', async (req, res) => {
           
             for(let j = 0; j < currUser.firstConnections.length; j++) {
                 connected_id = currUser.firstConnections[j].toString();
-                
+
                 if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id)){
                     secondConnections.push(connected_id);
                 }
@@ -113,7 +113,8 @@ router.get('/getAllConnections', async (req, res) => {
             for(let j = 0; j < currUser.firstConnections.length; j++) {
                 connected_id = currUser.firstConnections[j].toString();
 
-                if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id) && !thirdConnections.includes(connected_id)){
+                if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id) 
+                    && !thirdConnections.includes(connected_id)){
                     thirdConnections.push(connected_id);
                 }
             }
