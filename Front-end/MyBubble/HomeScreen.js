@@ -7,7 +7,6 @@ import GLOBAL from './global'
 class HomeScreen extends React.Component{
 
   constructor(props) {
-
     super(props);
 
     this.state = {
@@ -16,8 +15,33 @@ class HomeScreen extends React.Component{
       thirdList : [],
     };     
 
+    
   }
 
+  updateConnections = () =>{
+
+    fetch('http://charlieserver.eastus.cloudapp.azure.com/user/getAllConnections?_id='+GLOBAL.userID, {
+      method: 'GET'
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log(responseJson);
+      this.setState({firstList : responseJson.firstConnections});
+      this.setState({secondList : responseJson.secondConnections});
+      this.setState({thirdList : responseJson.thirdConnections});
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  UNSAFE_componentWillMount(){
+    this.interval = setInterval(() => this.updateConnections(), 1000);
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.interval);
+  }
 
   render(){
 
@@ -30,6 +54,7 @@ class HomeScreen extends React.Component{
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
         <View style={styles.button}>
+        
         <Button
           title="Add Connection"
           onPress={() => {
