@@ -35,11 +35,6 @@ useEffect(() => {
       const firstName = userInfo.user.givenName;
       console.log("user id:" + userInfo.user.id)
       
-      
-      var data = {
-          "lastName"  : lastName,
-          "firstName" : firstName
-      }; 
       console.log(email);
       console.log(lastName);
       console.log(firstName);
@@ -53,6 +48,33 @@ useEffect(() => {
         
         if((data || []).length === 0){
           doPut = true;
+          if (doPut){
+            var send = {"firstName" :firstName,
+                        "lastName"  :lastName,
+                        "email"     :email
+          }
+            //data.firstName = firstName;
+            //data.lastName = lastName;
+            //data.email = email;
+            console.log("We put");
+            const request2 = 'http://charlieserver.eastus.cloudapp.azure.com/user/newUser';
+            fetch(request2, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(send),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log('Success put:', data); 
+              GLOBAL.userID = data._id;
+            })
+            .catch((error) => {
+              console.error('Error put:', error);
+            });
+           
+        }
         }else{
           GLOBAL.userID = data[0]._id;
           console.log("mongo id: " + GLOBAL.userID);
@@ -66,29 +88,7 @@ useEffect(() => {
       console.log("Put?: " + doPut);
 
       //enter here put request
-      if (doPut){
-        data.firstName = firstName;
-        data.lastName = lastName;
-        data.email = email;
-        console.log("We put");
-        const request2 = 'http://charlieserver.eastus.cloudapp.azure.com/user/newUser';
-        fetch(request2, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Success put:', data);
-        })
-        .catch((error) => {
-          console.error('Error put:', error);
-        });
-        GLOBAL.userID = data[0].id;
-        doPut = false;
-    }
+
 
     } catch (error) {
       console.log('Message', error.message);
