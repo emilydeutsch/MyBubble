@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, View, Text, Dimensions, StyleSheet} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import GLOBAL from './global'
 
 class HomeScreen extends React.Component{
 
@@ -14,7 +15,6 @@ class HomeScreen extends React.Component{
       secondList : [],
       thirdList : [],
     };     
-
 
   }
 

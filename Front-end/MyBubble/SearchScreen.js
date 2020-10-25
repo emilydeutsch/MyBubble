@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import { State } from 'react-native-gesture-handler';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import GLOBAL from './global'
 
 class SearchScreen extends React.Component {
 
@@ -13,32 +12,61 @@ class SearchScreen extends React.Component {
       this.addSelection = this.addSelection.bind(this);
 
       this.state = {
-        //first : this.props.navigation.getParam("first" , []),
         searchResult : '',
-        data : '',
+        dataName : '',
+        dataUserID: '',
         selection : '',
-      };      
-    }
 
+      };     
+   
+    }
     
+    addSelection =(item, index) =>{
 
-    addSelection =(item) =>{
+      let userIDs = {
+        firstID : GLOBAL.userID,
+        secondID : '',
+      }
+
       console.log("added: " + item);
-      this.setState((state) => ({
-        //first : state.first.push(item),
-      }))
+
+      //send PUT request and add connection to first connections
+      userIDs.secondID = this.state.dataUserID;
+      console.log("first user ID: " + userIDs.firstID);
+      console.log("second user ID: " + userIDs.secondID);
+      this.putRequest(userIDs);
+
     }
 
-    componentDidMount = (req) =>{
+    putRequest = (req) =>{
+      fetch(req, {
+        method: 'PUT'
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
+    getRequest = (req) =>{
       fetch(req, {
         method: 'GET'
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson);
-        this.setState({
-          data: responseJson[0].firstName + " " + responseJson[0].lastName
-        })
+        console.log("GET response: " + responseJson);
+        if((responseJson || []).length === 0){
+          this.setState({searchResult : ['Not Found']});
+        }else{
+          this.setState({
+            dataName: responseJson[0].firstName + " " + responseJson[0].lastName,
+            dataUserID : responseJson[0].id,
+          })
+        }
+        
       })
       .catch((error) => {
         console.error(error);
@@ -49,17 +77,26 @@ class SearchScreen extends React.Component {
       
       const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?firstName='+text;
 
-      this.componentDidMount(request);
+      this.getRequest(request);
 
-      console.log(this.state.data);
+      console.log("request data: " + this.state.data);
 
-      this.setState({data : text});
+      //this.setState({dataName : text});
       
       {/* Enter code here for searching database using text string */}
-      this.setState(state =>({
-        searchResult : [state.data],
-      }) );
+
+      this.setState({searchResult : [this.state.dataName]});
+      
       console.log(this.state.searchResult);
+    }
+
+    isEmpty =(obj) =>{
+      for(var prop in obj){
+        if(obj.hasOwnProperty(prop)){
+          return false;
+        }
+      }
+      return JSON.stringify(obj) === JSON.stringify({});
     }
 
     render(){
@@ -79,7 +116,7 @@ class SearchScreen extends React.Component {
             data = {this.state.searchResult}
             renderItem={({item, index}) => {
               return <View><TouchableOpacity
-                onPress={() => this.addSelection(item)}
+                onPress={() => this.addSelection(item,index)}
               ><Text style={styles.item} >{item}</Text></TouchableOpacity></View>}
             }
             extraData = {this.state.searchResult}
