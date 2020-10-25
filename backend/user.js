@@ -55,8 +55,8 @@ router.post('/addFirstConnection', async (req, res) => {
         secondUser = await userModel.find({_id: req.body.secondID}).exec();
 
         if(!firstUser[0].firstConnections.includes(secondUser[0]._id)){
-            firstUser[0].firstConnections.push(secondUser[0]._id);
-            secondUser[0].firstConnections.push(firstUser[0]._id);
+            firstUser[0].firstConnections.push(secondUser[0]._id.toString());
+            secondUser[0].firstConnections.push(firstUser[0]._id.toString());
         }
         
         await firstUser[0].save();
@@ -71,5 +71,65 @@ router.post('/addFirstConnection', async (req, res) => {
     }
 });
 
+router.get('/getAllConnections', async (req, res) => {
+    if(!req.query._id){
+        res.writeHead(412, {'Content-Type' : 'text-plain'});
+        res.write('Failed: Missing User IDs or invalid');
+        res.send();
+        return;
+    }
+
+    let userID = req.query._id;
+    let user, firstConnections;
+    let secondConnections;
+    let thirdConnections;
+
+    try {
+        user = await userModel.find({_id: userID});
+        
+        console.log(user)
+        firstConnections = user[0].firstConnections;
+
+        secondConnections = [];
+
+        for(let i = 0; i < firstConnections.length; i++) {
+            let id = firstConnections[i];
+            let currUser = await userModel.findById(id);
+          
+            for(let j = 0; j < currUser.firstConnections.length; j++) {
+                connected_id = currUser.firstConnections[j].toString();
+                if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id)){
+
+                    secondConnections.push(connected_id);
+                
+                }
+            }
+        }
+
+        thirdConnections = [];
+        for(let i = 0; i < secondConnections.length; i++) {
+            let id = secondConnections[i];
+            let currUser = await userModel.findById(id);
+          
+            for(let j = 0; j < currUser.firstConnections.length; j++) {
+                connected_id = currUser.firstConnections[j].toString();
+                if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id) && !thirdConnections.includes(connected_id)){
+                    console.log(secondConnections.includes(connected_id))
+                    thirdConnections.push(connected_id);
+                    
+                }
+            }
+        }
+
+        let allConnections = {firstConnections, secondConnections, thirdConnections}
+        res.json(allConnections)
+
+    } catch(err) {
+        res.writeHead(412);
+        res.write(err.toString());
+        res.send();
+    }
+
+})
 
 module.exports = router;
