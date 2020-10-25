@@ -34,17 +34,23 @@ class SearchScreen extends React.Component {
       userIDs.secondID = this.state.dataUserID;
       console.log("first user ID: " + userIDs.firstID);
       console.log("second user ID: " + userIDs.secondID);
-      this.putRequest(userIDs);
 
-    }
+      req = 'http://charlieserver.eastus.cloudapp.azure.com/user/addFirstConnection'
 
-    putRequest = (req) =>{
+      this.putRequest(req,userIDs);
+      }
+
+    putRequest = (req, data) =>{
       fetch(req, {
-        method: 'PUT'
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       })
-      .then((response) => response.json())
+      .then((response) => response.text())
       .then((responseJson) => {
-        console.log(responseJson);
+        console.log("PUT response" + responseJson);
       })
       .catch((error) => {
         console.error(error);
@@ -63,7 +69,7 @@ class SearchScreen extends React.Component {
         }else{
           this.setState({
             dataName: responseJson[0].firstName + " " + responseJson[0].lastName,
-            dataUserID : responseJson[0].id,
+            dataUserID : responseJson[0]._id,
           })
         }
         
