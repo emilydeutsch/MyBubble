@@ -5,10 +5,18 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
 import EntryPoint from './EntryPoint';
+import GLOBAL from './global'
 
 const Stack = createStackNavigator();
 
 const App = () => {const [user, setUser] = useState({})
+
+GLOBAL.userID = this;
+GLOBAL.firstContactArr = this;
+GLOBAL.secondContactArr = this;
+GLOBAL.thirdContactArr = this;
+var doPut = false;
+
 useEffect(() => {
     GoogleSignin.configure({
       webClientId: '391210473174-j4bfvv60i9tgfaf1njmg5ud92rvtdbmt.apps.googleusercontent.com',
@@ -20,13 +28,14 @@ useEffect(() => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo)
       setUser(userInfo)
       //enter here a find email request
       const email = userInfo.user.email;
       const lastName = userInfo.user.familyName;
       const firstName = userInfo.user.givenName;
-      var doPut= false;
+      console.log("user id:" + userInfo.user.id)
+      
+      
       var data = {
           "lastName"  : lastName,
           "firstName" : firstName
@@ -35,23 +44,33 @@ useEffect(() => {
       console.log(lastName);
       console.log(firstName);
       //change to email 
-      const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?firstName='.concat(firstName);
+      const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?email='.concat(email);
       fetch(request, {
         method: 'GET',
       })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Success get:', data);
-        if(data.length == 0){
+        
+        if((data || []).length === 0){
           doPut = true;
+        }else{
+          GLOBAL.userID = data[0]._id;
+          console.log("mongo id: " + GLOBAL.userID);
         }
+        console.log('Success get: ' + data + " DoPut: " + doPut);
       })
       .catch((error) => {
         console.error('Error get:', error);
       });
 
+      console.log("Put?: " + doPut);
+
       //enter here put request
       if (doPut){
+        data.firstName = firstName;
+        data.lastName = lastName;
+        data.email = email;
+        console.log("We put");
         const request2 = 'http://charlieserver.eastus.cloudapp.azure.com/user/newUser';
         fetch(request2, {
           method: 'PUT',
@@ -67,6 +86,8 @@ useEffect(() => {
         .catch((error) => {
           console.error('Error put:', error);
         });
+        GLOBAL.userID = data[0].id;
+        doPut = false;
     }
 
     } catch (error) {
