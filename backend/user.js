@@ -15,7 +15,7 @@ mongoose.connect(url);
  */
 router.put('/newUser', (req,res) => {
     userFields = req.body;
-    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName});
+    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName, email: userFields.email});
     userModel.create(user, (err, result) => {
         if (err){
             res.writeHead(412);
@@ -40,7 +40,7 @@ router.get('/findByQuery', (req, res) => {
 });
 
 //Add conection by ID, respond only status code and success/failure message
-router.post('/addConnectionById', (req, res) => {
+router.post('/addFirstConnection', async (req, res) => {
     if(!req.body.firstID || !req.body.secondID || req.body.firstID == req.body.secondID){
         res.writeHead(412, {'Content-Type' : 'text-plain'});
         res.write('Failed: Missing User IDs or invalid');
