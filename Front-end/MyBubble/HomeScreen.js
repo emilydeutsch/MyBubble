@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Button, View, Text, Dimensions, StyleSheet} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import * as firebase from 'firebase/app'
+import messaging from '@react-native-firebase/messaging';
 import GLOBAL from './global'
 
 class HomeScreen extends React.Component{
@@ -16,6 +18,38 @@ class HomeScreen extends React.Component{
     };     
 
     
+  }
+
+  getNotification = () => {
+
+    req = 'http://charlieserver.eastus.cloudapp.azure.com/notifications/test';
+
+    const token = messaging().getToken();
+
+    let sendMessage = {
+      title: "this is a notification",
+      body: "it sure is",
+    }
+
+    let data = {
+      message : sendMessage,
+      registrationToken : token
+    }
+
+    fetch(req, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then((response) => response.text())
+      .then((responseJson) => {
+        console.log("PUT response" + responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   updateConnections = () =>{
@@ -81,6 +115,12 @@ class HomeScreen extends React.Component{
           title="Calendar"
           onPress={() =>
             navigation.navigate('Calendar')
+          }
+        />
+        <Button
+          title = "Notify"
+          onPress={() =>
+            this.getNotification()
           }
         />
         </View>
