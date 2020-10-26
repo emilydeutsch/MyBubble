@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, View, Text} from 'react-native';
+import { Button,Alert, View, Text} from 'react-native';
 import DropdownMenu from 'react-native-dropdown-menu';
 import GLOBAL from './global'
 
@@ -41,6 +41,7 @@ class SettingsScreen extends React.Component{
       .then((response) => response.text())
       .then((responseJson) => {
         console.log("PUT response" + responseJson);
+        alert('You changed your health status');
       })
       .catch((error) => {
         console.error(error);

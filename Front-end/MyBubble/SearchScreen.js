@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text,Alert, TextInput, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import GLOBAL from './global'
 
@@ -27,7 +27,7 @@ class SearchScreen extends React.Component {
         firstID : GLOBAL.userID,
         secondID : '',
       }
-
+      alert('You added a new connection');
       console.log("added: " + item);
 
       //send PUT request and add connection to first connections
@@ -51,6 +51,7 @@ class SearchScreen extends React.Component {
       .then((response) => response.text())
       .then((responseJson) => {
         console.log("PUT response" + responseJson);
+        
       })
       .catch((error) => {
         console.error(error);
@@ -67,9 +68,16 @@ class SearchScreen extends React.Component {
         if((responseJson || []).length === 0){
           this.setState({searchResult : ['Not Found']});
         }else{
+          var nameArr = [];
+          var idarr = [];
+          var i;
+          for(i = 0; i < responseJson.length; i++){
+            nameArr.push(responseJson[i].firstName + " " + responseJson[i].lastName);
+            idarr.push(responseJson[i]._id);
+          }
           this.setState({
-            dataName: responseJson[0].firstName + " " + responseJson[0].lastName,
-            dataUserID : responseJson[0]._id,
+            dataName: nameArr,
+            dataUserID : idarr,
           })
         }
         
