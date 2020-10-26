@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Button, View, Text, Dimensions, StyleSheet} from 'react-native';
+import { Button, View, Text, Dimensions, StyleSheet, useEffect, Alert} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import * as firebase from 'firebase/app'
+import * as firebase from 'firebase/app';
+import '@react-native-firebase/messaging';
 import messaging from '@react-native-firebase/messaging';
 import GLOBAL from './global'
 
@@ -20,21 +21,33 @@ class HomeScreen extends React.Component{
     
   }
 
-  getNotification = () => {
 
+  getNotification = async() => {
+
+    try{
+    
     req = 'http://charlieserver.eastus.cloudapp.azure.com/notifications/test';
 
-    const token = messaging().getToken();
+    var token = await messaging().getToken();
+
+    console.log(token);
 
     let sendMessage = {
-      title: "this is a notification",
-      body: "it sure is",
+      data : {},
+      notification : {
+        body: "this is a notification",
+        title: "it sure is",
+      },
+      
     }
 
     let data = {
-      message : sendMessage,
-      registrationToken : token
+      registrationToken : token.toString(),
+      message : sendMessage
+
     }
+
+    
 
     fetch(req, {
       method: 'POST',
@@ -45,11 +58,18 @@ class HomeScreen extends React.Component{
       })
       .then((response) => response.text())
       .then((responseJson) => {
-        console.log("PUT response" + responseJson);
+        console.log("POST response " + responseJson);
+        
       })
       .catch((error) => {
         console.error(error);
       });
+    }catch(error){
+      console.log(error);
+    }
+    // messaging().onMessage(async remoteMessage => {
+    //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    // });
   }
 
   updateConnections = () =>{
@@ -70,7 +90,7 @@ class HomeScreen extends React.Component{
   }
 
   UNSAFE_componentWillMount(){
-    this.interval = setInterval(() => this.updateConnections(), 1000);
+    this.interval = setInterval(() => this.updateConnections(), 10000);
   }
 
   componentWillUnmount(){
