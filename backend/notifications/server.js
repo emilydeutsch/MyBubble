@@ -1,24 +1,30 @@
 const express = require('express');
-const bodyparser = require('body-parser');
 const { admin } = require('./firebase-config');
 
-const app = express()
-app.use(bodyparser.json())
+const router = express.Router();
 
-const port = 3000
 const notification_options = {
     priority: "high",
     timeToLive: 60 * 60 * 24
-  };
-app.post('/firebase/notification', (req, res)=>{
-    const  registrationToken = req.body.registrationToken
-    const message = req.body.message
+};
+
+router.post('/test', (req, res)=>{
+    registrationToken = "c_BjmPdxQNKB8r5tyqdNz6:APA91bERc3Q0x6EjLa4OWaMy6IeZLFMcFpvCAasIvt7u5_L8airHThuVk8_C2aMKp4gngCdq07B3Qg51ZXhuMWVk9ahvi5QO7L8afQk2bgVJq199jC8d7gt30PFFPPxO09vnfoAiFF21";
+
+    const message = {
+      data : {},
+      notification : {
+        body: "this is a notification",
+        title: "it sure is",
+      },
+    }
+
     const options =  notification_options
     
       admin.messaging().sendToDevice(registrationToken, message, options)
       .then( response => {
 
-       res.status(200).send("Notification sent successfully")
+        res.status(200).send("Notification sent successfully")
        
       })
       .catch( error => {
@@ -26,6 +32,6 @@ app.post('/firebase/notification', (req, res)=>{
       });
 
 })
-app.listen(port, () =>{
-console.log("listening to port"+port)
-})
+
+module.exports = router;
+
