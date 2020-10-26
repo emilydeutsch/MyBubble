@@ -20,9 +20,6 @@ var doPut = false;
 
 useEffect(() => {
 
-  // const unsubscribe = messaging().onMessage(async remoteMessage => {
-  //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-  // });
 
     GoogleSignin.configure({
       webClientId: '391210473174-j4bfvv60i9tgfaf1njmg5ud92rvtdbmt.apps.googleusercontent.com',
@@ -30,7 +27,6 @@ useEffect(() => {
       forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
     });
     isSignedIn()
-    //return unsubscribe;
     }, [])
     const signIn = async () => {
     try {

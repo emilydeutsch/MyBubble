@@ -35,7 +35,7 @@ class SearchScreen extends React.Component {
       console.log("first user ID: " + userIDs.firstID);
       console.log("second user ID: " + userIDs.secondID);
 
-      req = 'http://charlieserver.eastus.cloudapp.azure.com/user/addFirstConnection'
+      req = 'http://charlieserver.eastus.cloudapp.azure.com/user/addFirstConnection';
 
       this.putRequest(req,userIDs);
       }

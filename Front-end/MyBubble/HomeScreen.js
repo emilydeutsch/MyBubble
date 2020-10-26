@@ -67,9 +67,7 @@ class HomeScreen extends React.Component{
     }catch(error){
       console.log(error);
     }
-    // messaging().onMessage(async remoteMessage => {
-    //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    // });
+
   }
 
   updateConnections = () =>{
@@ -90,7 +88,8 @@ class HomeScreen extends React.Component{
   }
 
   UNSAFE_componentWillMount(){
-    this.interval = setInterval(() => this.updateConnections(), 10000);
+    this.updateConnections();
+    this.interval = setInterval(() => this.updateConnections(), 5000);
   }
 
   componentWillUnmount(){
