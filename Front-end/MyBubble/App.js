@@ -144,7 +144,7 @@ useEffect(() => {
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
             onPress={signIn}
-          /></View></ImageBackground>) :   
+          /></View></ImageBackground>) :
         <EntryPoint></EntryPoint>
 
     }

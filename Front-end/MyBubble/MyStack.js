@@ -15,16 +15,16 @@ const screenwidth = Dimensions.get('screen').width;
 
 const MyStack = () => {
   return (
-    <View>
+    //<View>
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Calendar" component={CalendarScreen} />
     </Stack.Navigator>
-     {/* Need a buffer to widen the screen so the app loads */}
-     <Text style={styles.container}></Text>
-    </View>
+     //{/* Need a buffer to widen the screen so the app loads */}
+     //<Text style={styles.container}></Text>
+    //</View>
   );
 };
 

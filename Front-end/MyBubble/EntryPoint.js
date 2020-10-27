@@ -7,11 +7,10 @@ import MyStack from './MyStack';
 
 const EntryPoint = () => {
     return (
-    <View>
+
       <NavigationContainer>
           <MyStack></MyStack>
       </NavigationContainer>
-      </View>
     );
   };
   export default EntryPoint;
