@@ -2,13 +2,13 @@ import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text,ImageBackground, TouchableOpacity} from 'react-native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
 import EntryPoint from './EntryPoint';
 import GLOBAL from './global'
 
 const Stack = createStackNavigator();
-
+const image = require('./images/background.png');
 const App = () => {const [user, setUser] = useState({})
 
 GLOBAL.userID = this;
@@ -135,19 +135,18 @@ useEffect(() => {
     }
   };// signOut()
   return (
-    <View style={styles.main}>
+    <View style={styles.container}>
       {!user.idToken ? 
-        <GoogleSigninButton 
-          style={{ width: 192, height: 48 }}
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Dark}
-          onPress={signIn}
-        /> :  
+        (<ImageBackground source={image} style={styles.image}>
+        <View style={styles.button}>
+          <GoogleSigninButton 
+            style={{ width: 192, height: 48 }}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={signIn}
+          /></View></ImageBackground>) :   
         <EntryPoint></EntryPoint>
-      //   <TouchableOpacity onPress={signOut}>
-      //     <Text>Logout</Text>
-      //   </TouchableOpacity>
-      // 
+
     }
 
     </View>
@@ -158,7 +157,22 @@ useEffect(() => {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: 'center',
+  },
+  button: {
+    position: 'absolute',
+    bottom:120
+  },
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: 'center',
+  },
 })
 
 export default App;
