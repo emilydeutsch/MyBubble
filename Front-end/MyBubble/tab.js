@@ -5,6 +5,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createStackNavigator } from '@react-navigation/stack';
 import HomeStack from './HomeStack';
 
 const Tab = createBottomTabNavigator();
