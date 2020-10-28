@@ -1,15 +1,13 @@
 import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {StyleSheet, View, Text, TouchableOpacity, Alert} from 'react-native';
+import {StyleSheet, View, Text,ImageBackground, TouchableOpacity} from 'react-native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
-import messaging from '@react-native-firebase/messaging';
-import EntryPoint from './EntryPoint';
 import GLOBAL from './global'
-
+import TabScreen from './tab';
+//blue tint colour =#ACD7CA
 const Stack = createStackNavigator();
-
+const image = require('./images/background.png');
 const App = () => {const [user, setUser] = useState({})
 
 GLOBAL.userID = this;
@@ -121,7 +119,7 @@ useEffect(() => {
       setUser(userInfo);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        alert('User has not signed in yet');
+        //alert('User has not signed in yet');
         console.log('User has not signed in yet');
       } else {
         alert("Something went wrong. Unable to get user's info");
@@ -139,19 +137,18 @@ useEffect(() => {
     }
   };// signOut()
   return (
-    <View style={styles.main}>
+    <View style={styles.container}>
       {!user.idToken ? 
-        <GoogleSigninButton 
-          style={{ width: 192, height: 48 }}
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Dark}
-          onPress={signIn}
-        /> :  
-        <EntryPoint></EntryPoint>
-      //   <TouchableOpacity onPress={signOut}>
-      //     <Text>Logout</Text>
-      //   </TouchableOpacity>
-      // 
+        (<ImageBackground source={image} style={styles.image}>
+        <View style={styles.button}>
+          <GoogleSigninButton 
+            style={{ width: 192, height: 48 }}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={signIn}
+          /></View></ImageBackground>) :
+        <TabScreen></TabScreen>
+
     }
 
     </View>
@@ -162,7 +159,22 @@ useEffect(() => {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: 'center',
+  },
+  button: {
+    position: 'absolute',
+    bottom:120
+  },
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: 'center',
+  },
 })
 
 export default App;

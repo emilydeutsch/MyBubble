@@ -12,8 +12,8 @@
   "dependencies": {
     "@react-native-community/google-signin": "^5.0.0",
     "@react-native-community/masked-view": "^0.1.10",
-    "@react-native-firebase/app": "^8.4.6",
-    "@react-native-firebase/messaging": "^7.9.1",
+    "@react-native-picker/picker": "^1.8.3",
+    "@react-navigation/bottom-tabs": "^5.10.0",
     "@react-navigation/native": "^5.7.6",
     "@react-navigation/stack": "^5.9.3",
     "firebase": "^7.24.0",
@@ -21,15 +21,18 @@
     "react": "16.13.1",
     "react-native": "0.63.3",
     "react-native-dropdown-menu": "^2.0.0",
+    "react-native-elements": "^3.0.0-alpha.1",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-panel": "^1.0.4",
-    "react-native-push-notifications": "^3.0.10",
+    "react-native-push-notification": "^6.1.2",
     "react-native-radio-button": "^2.0.1",
     "react-native-reanimated": "^1.13.1",
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.11.0",
-    "react-native-simple-radio-button": "^2.7.4"
+    "react-native-search-bar": "^3.5.1",
+    "react-native-simple-radio-button": "^2.7.4",
+    "react-native-vector-icons": "^7.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
