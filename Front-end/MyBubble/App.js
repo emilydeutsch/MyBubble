@@ -1,11 +1,10 @@
 import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {StyleSheet, View, Text,ImageBackground, TouchableOpacity} from 'react-native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
-import EntryPoint from './EntryPoint';
 import GLOBAL from './global'
+import TabScreen from './tab';
 
 const Stack = createStackNavigator();
 const image = require('./images/background.png');
@@ -145,7 +144,7 @@ useEffect(() => {
             color={GoogleSigninButton.Color.Dark}
             onPress={signIn}
           /></View></ImageBackground>) :
-        <EntryPoint></EntryPoint>
+        <TabScreen></TabScreen>
 
     }
 

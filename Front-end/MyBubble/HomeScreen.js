@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { Button, View, Text, Dimensions, StyleSheet} from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
 import GLOBAL from './global'
 
 class HomeScreen extends React.Component{
@@ -58,29 +56,13 @@ class HomeScreen extends React.Component{
         <Button
           title="Add Connection"
           onPress={() => {
-            this.props.navigation.navigate('Search', {
+            this.props.navigation.navigate('AddConnection', {
               first: this.state.firstList,
               second : this.state.secondList,
               third : this.state.thirdList,
             });
-            navigation.navigate('Search')
+            navigation.navigate('AddConnection')
           }
-          }
-        />
-        </View>
-        <View style={styles.button}>
-        <Button
-          title="Settings"
-          onPress={() =>
-            navigation.navigate('Settings')
-          }
-        />
-        </View>
-        <View style={styles.button}>
-        <Button
-          title="Calendar"
-          onPress={() =>
-            navigation.navigate('Calendar')
           }
         />
         </View>
