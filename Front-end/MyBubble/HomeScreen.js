@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Button, View, Text, Dimensions, StyleSheet} from 'react-native';
+import { Button, View, Text,ImageBackground, Dimensions, StyleSheet} from 'react-native';
 import GLOBAL from './global'
-
+const image = require('./images/backgroundMain.png');
 class HomeScreen extends React.Component{
 
   constructor(props) {
@@ -46,9 +46,9 @@ class HomeScreen extends React.Component{
     const {navigation} = this.props;
 
     return (
-      <View>
-        
-    <Text style={styles.text}>First: {this.state.firstList.length}</Text>
+      <View style= {styles.container} >
+    <ImageBackground source={image} style={styles.image}>    
+        <Text style={styles.text}>First: {this.state.firstList.length}</Text>
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
         <View style={styles.button}>
@@ -66,6 +66,7 @@ class HomeScreen extends React.Component{
           }
         />
         </View>
+        </ImageBackground>
       </View>
     );
         }
@@ -79,6 +80,16 @@ class HomeScreen extends React.Component{
     text:{
       margin: 25,
       paddingBottom: 10,
+    },
+    container: {
+      flex: 1,
+      flexDirection: "column"
+    },
+    image: {
+      flex: 1,
+      resizeMode: "cover",
+      justifyContent: "center",
+      alignItems: 'center',
     },
   });
 

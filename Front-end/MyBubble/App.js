@@ -5,7 +5,7 @@ import {StyleSheet, View, Text,ImageBackground, TouchableOpacity} from 'react-na
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
 import GLOBAL from './global'
 import TabScreen from './tab';
-
+//blue tint colour =#ACD7CA
 const Stack = createStackNavigator();
 const image = require('./images/background.png');
 const App = () => {const [user, setUser] = useState({})
@@ -116,7 +116,7 @@ useEffect(() => {
       setUser(userInfo);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        alert('User has not signed in yet');
+        //alert('User has not signed in yet');
         console.log('User has not signed in yet');
       } else {
         alert("Something went wrong. Unable to get user's info");
