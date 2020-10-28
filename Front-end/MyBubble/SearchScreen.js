@@ -44,7 +44,7 @@ class SearchScreen extends React.Component {
       console.log("added: " + item);
 
       //send PUT request and add connection to first connections
-      userIDs.secondID = this.state.dataUserID;
+      userIDs.secondID = this.state.dataUserID[index];
       console.log("first user ID: " + userIDs.firstID);
       console.log("second user ID: " + userIDs.secondID);
 
