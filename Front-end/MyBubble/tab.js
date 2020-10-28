@@ -16,6 +16,7 @@ const TabScreen = () => {
             backBehavior="initialRoute" 
             tabBarOptions={{
                 activeTintColor: '#ACD7CA',
+                keyboardHidesTabBar: true,
                 style: { height: '9%',elevation: 10, }
             }}>
                 <Tab.Screen 
