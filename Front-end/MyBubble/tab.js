@@ -16,13 +16,14 @@ const TabScreen = () => {
             backBehavior="initialRoute" 
             tabBarOptions={{
                 activeTintColor: '#ACD7CA',
+                style: { height: '9%',elevation: 10, }
             }}>
                 <Tab.Screen 
                     name="Calendar" 
                     component={CalendarScreen}
                     options={{
                         tabBarIcon: ({ color, size }) => (
-                          <MaterialCommunityIcons name="calendar-month" color={color} size={size} />
+                          <MaterialCommunityIcons name="calendar-month" color={color} size={35} />
                         ),
                     }} 
                 />
@@ -31,7 +32,7 @@ const TabScreen = () => {
                     component={HomeStack} 
                     options={{
                         tabBarIcon: ({ color, size }) => (
-                          <MaterialCommunityIcons name="google-circles-extended" color={color} size={size} />
+                          <MaterialCommunityIcons name="google-circles-extended" color={color} size={35} />
                         ),
                     }} 
                 />
@@ -40,7 +41,7 @@ const TabScreen = () => {
                 component={SettingsScreen} 
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                      <MaterialCommunityIcons name="account-settings" color={color} size={size} />
+                      <MaterialCommunityIcons name="account-settings" color={color} size={35} />
                     ),
                 }} 
                 />

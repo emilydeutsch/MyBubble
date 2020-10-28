@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Button, View, Text,ImageBackground, Dimensions, StyleSheet} from 'react-native';
+import { View, Button, Text,ImageBackground, Dimensions, StyleSheet} from 'react-native';
 import GLOBAL from './global'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const image = require('./images/backgroundMain.png');
 class HomeScreen extends React.Component{
 
@@ -51,10 +52,10 @@ class HomeScreen extends React.Component{
         <Text style={styles.text}>First: {this.state.firstList.length}</Text>
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
-        <View style={styles.button}>
-        
-        <Button
-          title="Add Connection"
+      <View style={styles.button}>
+        <Icon.Button
+          name="account-plus"
+          backgroundColor="#ACD7CA"
           onPress={() => {
             this.props.navigation.navigate('AddConnection', {
               first: this.state.firstList,
@@ -62,10 +63,12 @@ class HomeScreen extends React.Component{
               third : this.state.thirdList,
             });
             navigation.navigate('AddConnection')
-          }
-          }
-        />
+          }}
+            >
+          Add Connection
+        </Icon.Button>
         </View>
+      
         </ImageBackground>
       </View>
     );
@@ -80,6 +83,8 @@ class HomeScreen extends React.Component{
     text:{
       margin: 25,
       paddingBottom: 10,
+      fontSize: 35,
+      fontWeight: "bold"
     },
     container: {
       flex: 1,
