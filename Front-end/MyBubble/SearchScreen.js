@@ -35,7 +35,7 @@ class SearchScreen extends React.Component {
     }
     
     addSelection =(item, index) =>{
-
+      const {navigation} = this.props;
       let userIDs = {
         firstID : GLOBAL.userID,
         secondID : '',
@@ -51,6 +51,7 @@ class SearchScreen extends React.Component {
       req = 'http://charlieserver.eastus.cloudapp.azure.com/user/addFirstConnection'
 
       this.putRequest(req,userIDs);
+      navigation.navigate('Home');
       }
 
     putRequest = (req, data) =>{
@@ -127,6 +128,7 @@ class SearchScreen extends React.Component {
     }
 
     render(){
+      const {navigation} = this.props;
     return (
       
       <View style= {styles.container} >
