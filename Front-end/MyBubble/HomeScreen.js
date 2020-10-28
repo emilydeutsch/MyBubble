@@ -239,12 +239,6 @@ class HomeScreen extends React.Component{
                   onPress={()=>{this.HealthAlert()}}
                   title="Health Alert"
         />
-        <Button
-          title = "Notify"
-          onPress={() =>
-            this.getNotification()
-          }
-        />
         </View>
       
         </ImageBackground>
