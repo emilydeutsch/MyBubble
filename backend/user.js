@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 const mongoose = require('mongoose');
-const { findOneAndUpdate } = require('./schema');
-const userModel = require('./schema');
+const { findOneAndUpdate, update } = require('./userSchema');
+const userModel = require('./userSchema');
+const _ = require('lodash');
 
-const url = 'mongodb://localhost:27018/mybubbletest-1';
-mongoose.connect(url);
+const mongourl = require('./const.js').url;
+mongoose.connect(mongourl);
 
 /* Puts a new user in the database, user must
  * have a first and last name. Takes arguments
@@ -52,8 +53,8 @@ router.post('/addFirstConnection', async (req, res) => {
     let firstUser, secondUser;
 
     try {
-        firstUser = await userModel.find({_id: req.body.firstID}).exec();
-        secondUser = await userModel.find({_id: req.body.secondID}).exec();
+        firstUser = await userModel.find({_id: req.body.firstID});
+        secondUser = await userModel.find({_id: req.body.secondID});
 
         if(!firstUser[0].firstConnections.includes(secondUser[0]._id)){
             firstUser[0].firstConnections.push(secondUser[0]._id.toString());
@@ -84,6 +85,7 @@ router.get('/getAllConnections', async (req, res) => {
     let user, firstConnections;
     let secondConnections;
     let thirdConnections;
+    let invalidItems;
 
     try {
         user = await userModel.find({_id: userID});
@@ -91,34 +93,33 @@ router.get('/getAllConnections', async (req, res) => {
         firstConnections = user[0].firstConnections;
 
         secondConnections = [];
+        invalidItems = [];
+
+        invalidItems.push(userID.toString());
+        invalidItems = invalidItems.concat(firstConnections);
 
         for(let i = 0; i < firstConnections.length; i++) {
             let id = firstConnections[i];
             let currUser = await userModel.findById(id);
           
-            for(let j = 0; j < currUser.firstConnections.length; j++) {
-                connected_id = currUser.firstConnections[j].toString();
-
-                if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id)){
-                    secondConnections.push(connected_id);
-                }
-            }
+            secondConnections = _.union(secondConnections, currUser.firstConnections);
         }
+
+        console.log(invalidItems);
+        console.log(secondConnections);
+
+        secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
+        invalidItems = invalidItems.concat(secondConnections);
 
         thirdConnections = [];
         for(let i = 0; i < secondConnections.length; i++) {
             let id = secondConnections[i];
             let currUser = await userModel.findById(id);
           
-            for(let j = 0; j < currUser.firstConnections.length; j++) {
-                connected_id = currUser.firstConnections[j].toString();
-
-                if(!firstConnections.includes(connected_id) && connected_id != userID && !secondConnections.includes(connected_id) 
-                    && !thirdConnections.includes(connected_id)){
-                    thirdConnections.push(connected_id);
-                }
-            }
+            thirdConnections = _.union(thirdConnections, currUser.firstConnections);
         }
+
+        thirdConnections = thirdConnections.filter(connection => !invalidItems.includes(connection));
 
         let allConnections = {firstConnections, secondConnections, thirdConnections}
         res.json(allConnections)
@@ -129,84 +130,6 @@ router.get('/getAllConnections', async (req, res) => {
         res.send();
     }
 
-})
-
-router.post('/updateHealthStatus', async (req, res) => {
-    if(!req.body.id || req.body.healthStatus == undefined){
-        res.writeHead(412, {'Content-Type' : 'text-plain'});
-        res.write('Failed: Missing Fields or invalid');
-        res.send();
-        return;
-    }
-
-    let user, firstConnections;
-    let secondConnections;
-    let thirdConnections;
-
-    try{
-        user = await userModel.findOneAndUpdate({_id : req.body.id}, {healthStatus: req.body.healthStatus, covidFlag: req.body.healthStatus});
-        user.healthStatus = req.body.healthStatus;
-
-        if(!user.healthStatus){
-            res.json(user);
-            return;
-        }
-
-        let count  = 0;
-
-        firstConnections = user.firstConnections;
-        secondConnections = [];
-
-        for(let i = 0; i < firstConnections.length; i++) {
-            let id = firstConnections[i];
-            let currUser = await userModel.findById(id);
-            currUser.covidFlag = true;
-            count++;
-            await currUser.save();
-
-            for(let j = 0; j < currUser.firstConnections.length; j++) {
-                connected_id = currUser.firstConnections[j].toString();
-
-                if(!firstConnections.includes(connected_id) && connected_id != req.body.id && !secondConnections.includes(connected_id)){
-                    secondConnections.push(connected_id);
-                }
-            }
-        }
-
-        thirdConnections = [];
-        for(let i = 0; i < secondConnections.length; i++) {
-            let id = secondConnections[i];
-            let currUser = await userModel.findById(id);
-            currUser.covidFlag = true;
-            count++;
-            await currUser.save();
-
-            for(let j = 0; j < currUser.firstConnections.length; j++) {
-                connected_id = currUser.firstConnections[j].toString();
-
-                if(!firstConnections.includes(connected_id) && connected_id != req.body.id && !secondConnections.includes(connected_id) 
-                    && !thirdConnections.includes(connected_id)){
-
-                    thirdConnections.push(connected_id);
-                }
-            }
-        }
-
-        for(let i = 0; i < thirdConnections.length; i++) {
-            let id = thirdConnections[i];
-            let currUser = await userModel.findById(id);
-            currUser.covidFlag = true;
-            count++;
-            await currUser.save();
-        }        
-
-        res.json({count});
-
-    } catch (err){
-        res.writeHead(412);
-        res.write(err.toString());
-        res.send();
-    }
 })
 
 module.exports = router;
