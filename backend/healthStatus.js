@@ -97,7 +97,7 @@ router.get('/pollHealthStatus', async (req, res) => {
         let statusUpdate = {changed, healthStatus};
 
         res.json(statusUpdate);
-    } catch {
+    } catch (err) {
         res.writeHead(412);
         res.write(err.toString());
         res.send();
