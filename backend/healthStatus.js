@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const mongoose = require('mongoose');
-const { findOneAndUpdate, update } = require('./userSchema');
 const userModel = require('./userSchema');
-const _ = require('lodash');
+
+const networkManager = require('./utils/networkManager.js');
 
 const mongourl = require('./const.js').url;
 mongoose.connect(mongourl);
@@ -17,14 +17,10 @@ router.post('/updateHealthStatus', async (req, res) => {
         return;
     }
 
-    let user, firstConnections;
-    let secondConnections;
-    let thirdConnections;
-
     let newHealthStatus = req.body.healthStatus ? 0 : 4;
 
     try{
-        user = (await userModel.find({_id : req.body.id}))[0];
+        let user = (await userModel.find({_id : req.body.id}))[0];
         
         user.healthStatus = newHealthStatus;
         user.healthStatus = newHealthStatus;
@@ -35,38 +31,11 @@ router.post('/updateHealthStatus', async (req, res) => {
             return;
         }
         
-        firstConnections = user.firstConnections;
-
-        secondConnections = [];
-        invalidItems = [];
-
-        invalidItems.push(req.body.id.toString());
-        invalidItems = invalidItems.concat(firstConnections);
-
-        for(let i = 0; i < firstConnections.length; i++) {
-            let id = firstConnections[i];
-            let currUser = await userModel.findById(id);
-          
-            secondConnections = _.union(secondConnections, currUser.firstConnections);
-        }
-
-        secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
-        invalidItems = invalidItems.concat(secondConnections);
-
-        thirdConnections = [];
-        for(let i = 0; i < secondConnections.length; i++) {
-            let id = secondConnections[i];
-            let currUser = await userModel.findById(id);
-          
-            thirdConnections = _.union(thirdConnections, currUser.firstConnections);
-        }
-
-        thirdConnections = thirdConnections.filter(connection => !invalidItems.includes(connection));
-
-        updateHealthStatuses(firstConnections, 1);
-        updateHealthStatuses(secondConnections, 2);
-        updateHealthStatuses(thirdConnections, 3);
-
+        let connections = await networkManager.findAllConnections(user);
+        await updateHealthStatuses(connections.firstConnections, 1);
+        await updateHealthStatuses(connections.secondConnections, 2);
+        await updateHealthStatuses(connections.thirdConnections, 3);
+       
         res.json(user)
 
     } catch (err){
@@ -104,15 +73,6 @@ router.get('/pollHealthStatus', async (req, res) => {
     } 
 });
 
-async function updateHealthStatuses(connections, level){
-    for(let i = 0; i < connections.length; i++){
-        let id = connections[i];
-        let currUser = await userModel.findById(id);
-        if(level < currUser.healthStatus){
-            currUser.healthStatus = level;
-            currUser.save();
-        }
-    }
-}
+
 
 module.exports = router;

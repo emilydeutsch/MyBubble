@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const mongoose = require('mongoose');
-const { findOneAndUpdate, update } = require('./userSchema');
 const userModel = require('./userSchema');
-const _ = require('lodash');
+
+const networkManager = require('./utils/networkManager.js');
 
 const mongourl = require('./const.js').url;
 mongoose.connect(mongourl);
@@ -82,54 +82,19 @@ router.get('/getAllConnections', async (req, res) => {
     }
 
     let userID = req.query._id;
-    let user, firstConnections;
-    let secondConnections;
-    let thirdConnections;
-    let invalidItems;
 
     try {
-        user = await userModel.find({_id: userID});
-        
-        firstConnections = user[0].firstConnections;
-
-        secondConnections = [];
-        invalidItems = [];
-
-        invalidItems.push(userID.toString());
-        invalidItems = invalidItems.concat(firstConnections);
-
-        for(let i = 0; i < firstConnections.length; i++) {
-            let id = firstConnections[i];
-            let currUser = await userModel.findById(id);
-          
-            secondConnections = _.union(secondConnections, currUser.firstConnections);
-        }
-
-        console.log(invalidItems);
-        console.log(secondConnections);
-
-        secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
-        invalidItems = invalidItems.concat(secondConnections);
-
-        thirdConnections = [];
-        for(let i = 0; i < secondConnections.length; i++) {
-            let id = secondConnections[i];
-            let currUser = await userModel.findById(id);
-          
-            thirdConnections = _.union(thirdConnections, currUser.firstConnections);
-        }
-
-        thirdConnections = thirdConnections.filter(connection => !invalidItems.includes(connection));
-
-        let allConnections = {firstConnections, secondConnections, thirdConnections}
-        res.json(allConnections)
+        let user = (await userModel.find({_id: userID}))[0];
+        console.log(user);
+        let connections = await networkManager.findAllConnections(user);
+        console.log(connections);
+        res.json(connections)
 
     } catch(err) {
         res.writeHead(412);
         res.write(err.toString());
         res.send();
     }
-
 })
 
 module.exports = router;
