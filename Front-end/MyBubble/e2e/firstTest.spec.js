@@ -1,5 +1,9 @@
+const detox = require('detox');
+const config = require('../package.json').detox;
+
 describe('Login', () => {
   beforeEach(async () => {
+    await detox.init(config);
     await device.reloadReactNative();
   });
 
@@ -13,6 +17,10 @@ describe('Login', () => {
   });
 
   it('show search screen', async () => {
-    await expect(element(by.id('Search'))).toBeVisible();
+    await expect(element(by.id('search'))).toBeVisible();
+  });
+
+  afterAll(async () => {
+    await detox.cleanup();
   });
 });
