@@ -14,6 +14,7 @@ class HomeScreen extends React.Component{
       firstList : [],
       secondList : [],
       thirdList : [],
+      changed : false,
     };     
 
     this.NewNotification = this.NewNotification.bind(this);
@@ -39,23 +40,23 @@ class HomeScreen extends React.Component{
   }
 
   updateHealth = () =>{
-    var changed = false;
+    
     //Update health status
-    fetch(GLOBAL.serverURL + '/healthStatus/pollHealthStatus?_id=' + GLOBAL.userID, {
+    fetch(GLOBAL.serverURL + '/healthStatus/pollHealthStatus?id=' + GLOBAL.userID, {
       method: 'GET'
     })
     .then((response) => response.json())
     .then((responseJson) => {
       console.log(responseJson);
-      changed = JSON.stringify(responseJson).changed;
-      GLOBAL.userHealth = JSON.stringify(responseJson).healthStatus;
+      this.setState({changed : responseJson.changed});
+      GLOBAL.userHealth = responseJson.healthStatus;
     })
     .catch((error) => {
       console.error(error);
     });
-
+    console.log("Did change: ", this.state.changed);
     //Send health alert if user status has changed
-    if(changed){
+    if(this.state.changed){
       this.HealthAlert();
     }
   }
@@ -77,7 +78,7 @@ class HomeScreen extends React.Component{
       
       // (required) Called when a remote or local notification is opened or received
       onNotification: notification => {
-          console.log(notification);
+          console.log("NOTIFICATION:" + notification);
           
         },
       // Should the initial notification be popped automatically
@@ -195,7 +196,7 @@ class HomeScreen extends React.Component{
      
       messageId: "google:message_id", // (optional) added as `message_id` to intent extras so opening push notification can find data stored by @react-native-firebase/messaging module. 
      
-      actions: ["Yes", "No"], // (Android only) See the doc for notification actions to know more
+      actions: ["Ok", "Cancel"], // (Android only) See the doc for notification actions to know more
       invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
      
       /* iOS only properties */
@@ -239,7 +240,7 @@ class HomeScreen extends React.Component{
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
       <View style={styles.button}>
-        <Icon.Button
+        <Icon.Button testID = 'add'
           name="account-plus"
           backgroundColor="#ACD7CA"
           onPress={() => {
@@ -253,14 +254,6 @@ class HomeScreen extends React.Component{
             >
           Add Connection
         </Icon.Button>
-        <Button
-          onPress={()=>{this.NewNotification()}}
-          title="Show Notification"
-        />
-        <Button
-          onPress={()=>{this.HealthAlert()}}
-          title="Health Alert"
-        />
         </View>
       
         </ImageBackground>

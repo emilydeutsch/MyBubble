@@ -135,7 +135,7 @@ class SearchScreen extends React.Component {
       
       <View style= {styles.container} >
       <ImageBackground source={image} style={styles.image}>       
-            <TextInput
+            <TextInput testID = 'search'
             keyboardShouldPersistTaps={"always"}
             blurOnSubmit={false} 
               placeholder= "Search"

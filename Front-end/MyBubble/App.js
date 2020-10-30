@@ -142,7 +142,7 @@ useEffect(() => {
       {!user.idToken ? 
         (<ImageBackground source={image} style={styles.image}>
         <View style={styles.button}>
-          <GoogleSigninButton 
+          <GoogleSigninButton testID = 'Google'
             style={{ width: 192, height: 48 }}
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
