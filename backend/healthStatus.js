@@ -17,13 +17,17 @@ router.post('/updateHealthStatus', async (req, res) => {
         return;
     }
 
-    let newHealthStatus = req.body.healthStatus ? 0 : 4;
+    let newHealthStatus = (req.body.healthStatus == "true") ? 0 : 4;
 
     try{
         let user = (await userModel.find({_id : req.body.id}))[0];
         
+        if(newHealthStatus == 4 && user.healthStatus > 0){
+            newHealthStatus = user.healthStatus;
+        }
+
         user.healthStatus = newHealthStatus;
-        user.healthStatus = newHealthStatus;
+        user.healthStatusOnLastCheck = newHealthStatus;
         user.save();
 
         if(newHealthStatus == 4){
@@ -32,9 +36,9 @@ router.post('/updateHealthStatus', async (req, res) => {
         }
         
         let connections = await networkManager.findAllConnections(user);
-        await updateHealthStatuses(connections.firstConnections, 1);
-        await updateHealthStatuses(connections.secondConnections, 2);
-        await updateHealthStatuses(connections.thirdConnections, 3);
+        await networkManager.updateHealthStatuses(connections.firstConnections, 1);
+        await networkManager.updateHealthStatuses(connections.secondConnections, 2);
+        await networkManager.updateHealthStatuses(connections.thirdConnections, 3);
        
         res.json(user)
 
@@ -72,7 +76,5 @@ router.get('/pollHealthStatus', async (req, res) => {
         res.send();
     } 
 });
-
-
 
 module.exports = router;
