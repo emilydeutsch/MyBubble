@@ -48,7 +48,7 @@ class SearchScreen extends React.Component {
       console.log("first user ID: " + userIDs.firstID);
       console.log("second user ID: " + userIDs.secondID);
 
-      req = 'http://charlieserver.eastus.cloudapp.azure.com/user/addFirstConnection';
+      var req = GLOBAL.serverURL + '/user/addFirstConnection';
 
       this.putRequest(req,userIDs);
       navigation.navigate('Home');
@@ -73,6 +73,7 @@ class SearchScreen extends React.Component {
     }
 
     getRequest = (req) =>{
+      console.log(req);
       fetch(req, {
         method: 'GET'
       })
@@ -89,6 +90,7 @@ class SearchScreen extends React.Component {
             nameArr.push(responseJson[i].firstName + " " + responseJson[i].lastName);
             idarr.push(responseJson[i]._id);
           }
+          
           this.setState({
             dataName: nameArr,
             dataUserID : idarr,
@@ -103,10 +105,10 @@ class SearchScreen extends React.Component {
     
     searchSubmit = (text) => {
       
-      const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?firstName='+text;
+      const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
 
       this.getRequest(request);
-
+      console.log("request: " + request);
       console.log("request data: " + this.state.data);
 
       //this.setState({dataName : text});

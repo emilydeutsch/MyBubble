@@ -22,13 +22,13 @@ class HomeScreen extends React.Component{
   
 
   updateConnections = () =>{
-
-    fetch('http://charlieserver.eastus.cloudapp.azure.com/user/getAllConnections?_id='+GLOBAL.userID, {
+    
+    //Update the connections
+    fetch(GLOBAL.serverURL + '/user/getAllConnections?_id='+GLOBAL.userID, {
       method: 'GET'
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      //console.log(responseJson);
       this.setState({firstList : responseJson.firstConnections});
       this.setState({secondList : responseJson.secondConnections});
       this.setState({thirdList : responseJson.thirdConnections});
@@ -38,8 +38,30 @@ class HomeScreen extends React.Component{
     });
   }
 
+  updateHealth = () =>{
+    var changed = false;
+    //Update health status
+    fetch(GLOBAL.serverURL + '/healthStatus/pollHealthStatus?_id=' + GLOBAL.userID, {
+      method: 'GET'
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log(responseJson);
+      changed = JSON.stringify(responseJson).changed;
+      GLOBAL.userHealth = JSON.stringify(responseJson).healthStatus;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+    //Send health alert if user status has changed
+    if(changed){
+      this.HealthAlert();
+    }
+  }
+
   componentDidMount(){
-    console.log("bruh");
+    
     PushNotification.createChannel(
       {
         channelId: "channel-1", // (required)
@@ -72,12 +94,12 @@ class HomeScreen extends React.Component{
     PushNotification.getChannels(function (channel_ids) {
       console.log(channel_ids); // ['channel_id_1']
     });
-    
+    this.interval = setInterval(() => this.updateHealth(), 10000);
     this.interval = setInterval(() => this.updateConnections(), 1000);
   }
 
   NewNotification(){
-
+    
     PushNotification.localNotification({
       /* Android Only Properties */
       channelId: "channel-1", // (required) channelId, if the channel doesn't exist, it will be created with options passed above (importance, vibration, sound). Once the channel is created, the channel will not be update. Make sure your channelId is different if you change these options. If you have created a custom channel, it will apply options of the channel.
@@ -123,7 +145,7 @@ class HomeScreen extends React.Component{
       userInfo: {}, // (optional) default: {} (using null throws a JSON value '<null>' error)
       playSound: false, // (optional) default: true
       soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-      number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+      number: 1, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
       repeatType: "day", // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
     });
     PushNotification.popInitialNotification((notification) => {
@@ -136,11 +158,12 @@ class HomeScreen extends React.Component{
       console.log('Delivered Notifications:', callback);
     });
     PushNotification.cancelAllLocalNotifications();
+    PushNotification.removeAllDeliveredNotifications();
 
   }
 
   HealthAlert(){
-
+    
     PushNotification.localNotification({
       /* Android Only Properties */
       channelId: "channel-1", // (required) channelId, if the channel doesn't exist, it will be created with options passed above (importance, vibration, sound). Once the channel is created, the channel will not be update. Make sure your channelId is different if you change these options. If you have created a custom channel, it will apply options of the channel.
@@ -186,8 +209,8 @@ class HomeScreen extends React.Component{
       userInfo: {}, // (optional) default: {} (using null throws a JSON value '<null>' error)
       playSound: false, // (optional) default: true
       soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-      number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
-      repeatType: "day", // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
+      number: 1, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+      repeatType: "", // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
     });
     PushNotification.popInitialNotification((notification) => {
       console.log('Initial Notification', notification);
@@ -198,8 +221,7 @@ class HomeScreen extends React.Component{
     PushNotification.getDeliveredNotifications((callback) => {
       console.log('Delivered Notifications:', callback);
     });
-    PushNotification.cancelAllLocalNotifications();
-
+    
   }
 
   componentWillUnmount(){
@@ -232,12 +254,12 @@ class HomeScreen extends React.Component{
           Add Connection
         </Icon.Button>
         <Button
-                  onPress={()=>{this.NewNotification()}}
-                  title="Show Notification"
+          onPress={()=>{this.NewNotification()}}
+          title="Show Notification"
         />
         <Button
-                  onPress={()=>{this.HealthAlert()}}
-                  title="Health Alert"
+          onPress={()=>{this.HealthAlert()}}
+          title="Health Alert"
         />
         </View>
       
