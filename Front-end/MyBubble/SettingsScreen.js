@@ -33,7 +33,7 @@ class SettingsScreen extends React.Component{
       data.healthStatus = false;
     }
 
-    req = 'http://charlieserver.eastus.cloudapp.azure.com/user/updateHealthStatus';
+    req = GLOBAL.serverURL + '/healthStatus/updateHealthStatus';
 
     fetch(req, {
       method: 'POST',
@@ -44,7 +44,7 @@ class SettingsScreen extends React.Component{
       })
       .then((response) => response.text())
       .then((responseJson) => {
-        console.log("PUT response" + responseJson);
+        console.log("POST response" + responseJson);
         alert('You changed your health status');
       })
       .catch((error) => {

@@ -14,6 +14,7 @@ GLOBAL.userID = this;
 GLOBAL.firstContactArr = this;
 GLOBAL.secondContactArr = this;
 GLOBAL.thirdContactArr = this;
+GLOBAL.serverURL = 'http://52.152.138.4:8080';
 var doPut = false;
 
 useEffect(() => {
@@ -41,7 +42,7 @@ useEffect(() => {
       console.log(lastName);
       console.log(firstName);
       //change to email 
-      const request = 'http://charlieserver.eastus.cloudapp.azure.com/user/findByQuery?email='.concat(email);
+      const request = GLOBAL.serverURL + '/user/findByQuery?email='.concat(email);
       fetch(request, {
         method: 'GET',
       })
@@ -59,7 +60,7 @@ useEffect(() => {
             //data.lastName = lastName;
             //data.email = email;
             console.log("We put");
-            const request2 = 'http://charlieserver.eastus.cloudapp.azure.com/user/newUser';
+            const request2 = GLOBAL.serverURL + '/user/newUser';
             fetch(request2, {
               method: 'PUT',
               headers: {
