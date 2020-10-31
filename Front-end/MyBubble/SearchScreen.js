@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { View, Text,SafeAreaView, ImageBackground, TextInput, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import { State } from 'react-native-gesture-handler';
-import { SearchBar } from 'react-native-elements';
 import GLOBAL from './global'
 const image = require('./images/backgroundMain.png');
 
