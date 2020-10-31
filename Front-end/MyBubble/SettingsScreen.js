@@ -23,15 +23,17 @@ class SettingsScreen extends React.Component{
 
     let data = {
       id : GLOBAL.userID,
-      healthStatus : false,
+      healthStatus : "false",
     };
 
-    if(this.state.currentHealth == 'covid'){
-      data.healthStatus = true;
+    if(selected.localeCompare('covid') == 0){
+      data.healthStatus = "true";
     }
     else{
-      data.healthStatus = false;
+      data.healthStatus = "false";
     }
+
+    console.log("Health:", data.healthStatus);
 
     req = GLOBAL.serverURL + '/healthStatus/updateHealthStatus';
 

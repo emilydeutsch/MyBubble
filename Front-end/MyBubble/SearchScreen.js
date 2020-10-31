@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { View, Text,SafeAreaView, ImageBackground, TextInput, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import { State } from 'react-native-gesture-handler';
-import { SearchBar } from 'react-native-elements';
 import GLOBAL from './global'
 const image = require('./images/backgroundMain.png');
 
@@ -135,7 +134,7 @@ class SearchScreen extends React.Component {
       
       <View style= {styles.container} >
       <ImageBackground source={image} style={styles.image}>       
-            <TextInput
+            <TextInput testID = 'search'
             keyboardShouldPersistTaps={"always"}
             blurOnSubmit={false} 
               placeholder= "Search"
