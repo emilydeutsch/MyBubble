@@ -74,4 +74,10 @@ describe('getAllConnections', () => {
   })
 })
 
+/*
+afterAll(() => {
+  mongoose.disconnect()
+  console.log("done")
+});
+*/
 afterAll(() => setTimeout(() => process.exit(), 1000))
