@@ -85,9 +85,7 @@ router.get('/getAllConnections', async (req, res) => {
 
     try {
         let user = (await userModel.find({_id: userID}))[0];
-        console.log(user);
         let connections = await networkManager.findAllConnections(user);
-        console.log(connections);
         res.json(connections)
 
     } catch(err) {

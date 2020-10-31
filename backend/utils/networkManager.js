@@ -54,14 +54,19 @@ findAllConnections = async (user) => {
 
 updateHealthStatuses = async (connections, level) =>{
     try {
+        let count = 0;
+
         for(let i = 0; i < connections.length; i++){
             let id = connections[i];
             let currUser = await userModel.findById(id);
+            
             if(level < currUser.healthStatus){
                 currUser.healthStatus = level;
                 currUser.save();
+                count++;
             }
         }
+        return count;
     } catch (err) {
         throw err;
     }   
