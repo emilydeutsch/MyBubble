@@ -74,7 +74,4 @@ describe('getAllConnections', () => {
   })
 })
 
-afterAll(async () => {
-  await mongoose.connection.close()
-  console.log("done")
-});
+afterAll(() => setTimeout(() => process.exit(), 1000))
