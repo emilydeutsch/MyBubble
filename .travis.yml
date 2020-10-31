@@ -5,6 +5,7 @@ node_js:
 
 services:
   - mongodb
+  - mongooose
 
 script: 
   - cd backend/tests
