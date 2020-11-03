@@ -1,10 +1,16 @@
 import * as React from 'react';
-import { View, Button, Text,ImageBackground, Dimensions, StyleSheet} from 'react-native';
+import { View, Button, Text,Image,ImageBackground, Dimensions, StyleSheet} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import GLOBAL from './global'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const image = require('./images/backgroundMain.png');
-
+var badgeImages = [
+  require('./images/badge0purple.png'),
+  require('./images/badge1red.png'),
+  require('./images/badge2orange.png'),
+  require('./images/badge3yellow.png'),
+  require('./images/badge4green.png'),
+];
 class HomeScreen extends React.Component{
 
   constructor(props) {
@@ -15,6 +21,7 @@ class HomeScreen extends React.Component{
       secondList : [],
       thirdList : [],
       changed : false,
+      userHealth : 4,
     };     
 
     this.NewNotification = this.NewNotification.bind(this);
@@ -49,6 +56,7 @@ class HomeScreen extends React.Component{
     .then((responseJson) => {
       console.log(responseJson);
       this.setState({changed : responseJson.changed});
+      this.setState({healthStatus : responseJson.healthStatus});
       GLOBAL.userHealth = responseJson.healthStatus;
     })
     .catch((error) => {
@@ -235,7 +243,8 @@ class HomeScreen extends React.Component{
 
     return (
       <View style= {styles.container} >
-    <ImageBackground source={image} style={styles.image}>    
+    <ImageBackground source={image} style={styles.image}>
+        <Image style = {styles.badge} source={badgeImages[this.state.healthStatus]}/>    
         <Text style={styles.text}>First: {this.state.firstList.length}</Text>
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
@@ -283,6 +292,10 @@ class HomeScreen extends React.Component{
       justifyContent: "center",
       alignItems: 'center',
     },
+    badge:{
+      width: 100,
+      height: 100,
+    }
   });
 
 export default HomeScreen;
