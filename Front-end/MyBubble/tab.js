@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeStack from './HomeStack';
+import CalendarStack from './CalendarStack';
 
 const Tab = createBottomTabNavigator();
 const TabScreen = () => {
@@ -22,7 +23,7 @@ const TabScreen = () => {
             }}>
                 <Tab.Screen 
                     name="Calendar" 
-                    component={CalendarScreen}
+                    component={CalendarStack}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                           <MaterialCommunityIcons name="calendar-month" color={color} size={35} />
