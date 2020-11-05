@@ -46,7 +46,6 @@ let mockConnections = {
 }
 
 networkManager.findAllConnections = jest.fn().mockResolvedValue(mockConnections);
-
 networkManager.updateHealthStatuses = jest.fn().mockResolvedValue(3);
 
 
@@ -74,4 +73,4 @@ describe('getAllConnections', () => {
   })
 })
 
-afterAll(() => setTimeout(() => process.exit(), 1000))
+afterAll(() => setTimeout(() => process.exit(), 1000));

@@ -21,12 +21,9 @@ findAllConnections = async (user) => {
 
         for(let i = 0; i < firstConnections.length; i++) {
             let id = firstConnections[i];
-            console.log("fc promise start");
             let currUser = await userModel.findById(id);
-            console.log("fc promise end");
 
             secondConnections = _.union(secondConnections, currUser.firstConnections);
-            
         }
 
         secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
@@ -36,10 +33,8 @@ findAllConnections = async (user) => {
         let thirdConnections = [];
         for(let i = 0; i < secondConnections.length; i++) {
             let id = secondConnections[i];
-            console.log("sc promise start");
+           
             let currUser = await userModel.findById(id);
-            console.log("sc promise end");
-
             thirdConnections = _.union(thirdConnections, currUser.firstConnections);
         }
 
