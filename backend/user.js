@@ -150,8 +150,21 @@ router.get('/getTemporaryConnections', async (req, res) => {
 
     try {
         let user = (await userModel.find({_id: userID}))[0];
-        let temporaryConnections = user.temporaryConnections;
-        res.json(temporaryConnections)
+        let temporaryConnectionsDetails = [];
+
+        for(let i = 0; i < user.temporaryConnections.length; i++){
+            let connectedUser = (await userModel.find({_id: user.temporaryConnections[i]._id}))[0];
+
+            temporaryConnectionsDetails.push({
+                _id: connectedUser._id,
+                date: user.temporaryConnections[i].date,
+                firstName: connectedUser.firstName,
+                lastName: connectedUser.lastName,
+                healthStatus: connectedUser.healthStatus,
+            });
+        }
+
+        res.json(temporaryConnectionsDetails)
 
     } catch(err) {
         res.writeHead(412);
