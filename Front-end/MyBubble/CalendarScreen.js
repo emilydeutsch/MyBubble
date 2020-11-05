@@ -113,7 +113,7 @@ class CalendarScreen extends React.Component {
         data={this.state.dataHealth}
         
         renderItem={({item, index}) => {
-          return <View  style={{flex: 1, flexDirection: 'row'}} >
+          return <View  style={{flex: 1, flexDirection: 'row',padding:5}} >
           <Image style = {styles.badge} source={badgeImages[item]}/>  
           </View>
           }}  
@@ -141,9 +141,8 @@ class CalendarScreen extends React.Component {
       height: 44,
     },
     badge:{
-      width: 44,
-      height: 44,
-      padding:30,
+      width: 34,
+      height: 34,
     }
   });
   export default CalendarScreen;
