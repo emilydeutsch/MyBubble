@@ -24,6 +24,8 @@ router.post('/updateHealthStatus', async (req, res) => {
         
         if(newHealthStatus == 4 && user.healthStatus > 0){
             newHealthStatus = user.healthStatus;
+        } else if(newHealthStatus == 4 && user.healthStatus == 0){
+            newHealthStatus = networkManager.findLowestConnectedHealthStatus(user.firstConnections) + 1;
         }
 
         user.healthStatus = newHealthStatus;

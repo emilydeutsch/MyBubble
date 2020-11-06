@@ -61,6 +61,40 @@ router.post('/addFirstConnection', async (req, res) => {
             secondUser.firstConnections.push(firstUser._id.toString());
         }
         
+        firstUser.temporaryConnections.filter(tc => tc._id.toString() == secondUser._id.toString());
+        secondUser.temporaryConnections.filter(tc => tc._id.toString() == firstUser._id.toString());
+
+        if(abs(firstUser.healthStatus - secondUser.healthStatus) >= 2){
+            let lowerUser = (firstUser.healthStatus < secondUser.healthStatus) ? firstUser : secondUser;
+            let higherUser = (firstUser.healthStatus > secondUser.healthStatus) ? firstUser : secondUser;
+
+            let originalHealthStatus = higherUser.healthStatus;
+            if(originalHealthStatus - lowerUser.healthStatus >= 2){
+                higherUser.healthStatus = lowerUser.healthStatus + 1;
+            }
+
+            if(originalHealthStatus - lowerUser.healthStatus >= 3){
+                for(let i = 0; i < higherUser.firstConnections.length; i++){
+                    let user = (await userModel.find({_id: higherUser.firstConnections[i]}))[0];
+                    user.healthStatus = higherUser.healthStatus + 2;
+                }
+            }
+
+            if(originalHealthStatus - lowerUser.healthStatus >= 3){
+                let secondConnections = await networkManager.findSecondConnections(higherUser);
+                for(let i = 0; i < secondConnections.length; i++){
+                    let user = (await userModel.find({_id: secondConnections[i]}))[0];
+                    user.healthStatus = higherUser.healthStatus + 3;
+                }
+            }
+
+            if(firstUser.healthStatus != firstUser.healthStatusOnLastCheck) {
+                firstUser.healthStatusOnLastCheck = firstUser.healthStatus;
+            }
+        }
+
+        
+
         await firstUser.save();
         await secondUser.save();
 
@@ -97,7 +131,9 @@ router.get('/getAllConnections', async (req, res) => {
 })
 
 router.post('/addTemporaryConnection', async (req, res) =>{
-    if(!req.body.firstID || !req.body.secondID || !req.body.date){
+    if(!req.body.firstID || !req.body.secondID || !req.body.date 
+        || isNan(new Date(req.body.date).valueOf())){
+
         res.writeHead(412, {'Content-Type' : 'text-plain'});
         res.write('Failed: Missing Fields');
         res.send();
@@ -151,6 +187,14 @@ router.get('/getTemporaryConnections', async (req, res) => {
     try {
         let user = (await userModel.find({_id: userID}))[0];
         let temporaryConnectionsDetails = [];
+
+        let currDate = new Date();
+        user.temporaryConnections.filter((user) => {
+            let connectionDate = new Date(user.date);
+            let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
+            
+            return (dayDiff >= 14);
+        })
 
         for(let i = 0; i < user.temporaryConnections.length; i++){
             let connectedUser = (await userModel.find({_id: user.temporaryConnections[i]._id}))[0];

@@ -47,6 +47,32 @@ findAllConnections = async (user) => {
     }
 }
 
+findSecondConnections() = async (user) => {
+    try {
+        console.log(mongourl);
+        let firstConnections = user.firstConnections;
+
+        let secondConnections = [];
+        let invalidItems = [];
+
+        invalidItems.push(user._id.toString());
+        invalidItems = invalidItems.concat(firstConnections);
+
+        for(let i = 0; i < firstConnections.length; i++) {
+            let id = firstConnections[i];
+            let currUser = await userModel.findById(id);
+
+            secondConnections = _.union(secondConnections, currUser.firstConnections);
+        }
+
+        secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
+
+        return secondConnections;
+    } catch (err) {
+        throw err;
+    }
+}
+
 updateHealthStatuses = async (connections, level) =>{
     try {
         let count = 0;
@@ -67,4 +93,25 @@ updateHealthStatuses = async (connections, level) =>{
     }   
 }
 
-module.exports = {findAllConnections, updateHealthStatuses};
+findLowestConnectedHealthStatus = async (connections) => {
+    try {
+        let lowestConnected = 4;
+
+        for(let i = 0; i < connections.length; i++){
+            let id = connections[i];
+            let currUser = await userModel.findById(id);
+            
+            if(currUser.healthStatus < lowestConnected){
+                lowestConnected = currUser.healthStatus;
+                if(lowestConnected == 0){
+                    break;
+                }
+            }
+        }
+        return lowestConnected;
+    } catch (err) {
+        throw err;
+    }   
+}
+
+module.exports = {findAllConnections, updateHealthStatuses, findLowestConnectedHealthStatus, findSecondConnections};
