@@ -54,7 +54,7 @@ class HomeScreen extends React.Component{
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      console.log(responseJson);
+      //console.log(responseJson);
       this.setState({changed : responseJson.changed});
       this.setState({healthStatus : responseJson.healthStatus});
       GLOBAL.userHealth = responseJson.healthStatus;
@@ -62,7 +62,7 @@ class HomeScreen extends React.Component{
     .catch((error) => {
       console.error(error);
     });
-    console.log("Did change: ", this.state.changed);
+    //console.log("Did change: ", this.state.changed);
     //Send health alert if user status has changed
     if(this.state.changed){
       this.HealthAlert();
@@ -103,7 +103,7 @@ class HomeScreen extends React.Component{
     PushNotification.getChannels(function (channel_ids) {
       console.log(channel_ids); // ['channel_id_1']
     });
-    this.interval = setInterval(() => this.updateHealth(), 10000);
+    this.interval = setInterval(() => this.updateHealth(), 500);
     this.interval = setInterval(() => this.updateConnections(), 1000);
   }
 
