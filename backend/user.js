@@ -7,6 +7,8 @@ const userModel = require('./userSchema');
 const networkManager = require('./utils/networkManager.js');
 
 const mongourl = require('./const.js').url;
+const hsConst = require('./utils/healthStatusConst.js');
+
 mongoose.connect(mongourl);
 
 /* Puts a new user in the database, user must
@@ -64,27 +66,27 @@ router.post('/addFirstConnection', async (req, res) => {
         firstUser.temporaryConnections.filter(tc => tc._id.toString() == secondUser._id.toString());
         secondUser.temporaryConnections.filter(tc => tc._id.toString() == firstUser._id.toString());
 
-        if(abs(firstUser.healthStatus - secondUser.healthStatus) >= 2){
+        if(abs(firstUser.healthStatus - secondUser.healthStatus) >= hsConst.differenceLevel.moderate){
             let lowerUser = (firstUser.healthStatus < secondUser.healthStatus) ? firstUser : secondUser;
             let higherUser = (firstUser.healthStatus > secondUser.healthStatus) ? firstUser : secondUser;
 
             let originalHealthStatus = higherUser.healthStatus;
-            if(originalHealthStatus - lowerUser.healthStatus >= 2){
-                higherUser.healthStatus = lowerUser.healthStatus + 1;
+            if(originalHealthStatus - lowerUser.healthStatus >= hsConst.differenceLevel.moderate){
+                higherUser.healthStatus = lowerUser.healthStatus + connectivityLevel.first;
             }
 
-            if(originalHealthStatus - lowerUser.healthStatus >= 3){
+            if(originalHealthStatus - lowerUser.healthStatus >= hsConst.differenceLevel.major){
                 for(let i = 0; i < higherUser.firstConnections.length; i++){
                     let user = (await userModel.find({_id: higherUser.firstConnections[i]}))[0];
-                    user.healthStatus = higherUser.healthStatus + 2;
+                    user.healthStatus = Math.min(lowerUser.healthStatus + hsConst.connectivityLevel.second, user.healthStatus);
                 }
             }
 
-            if(originalHealthStatus - lowerUser.healthStatus >= 3){
+            if(originalHealthStatus - lowerUser.healthStatus >= hsConst.differenceLevel.immediate){
                 let secondConnections = await networkManager.findSecondConnections(higherUser);
                 for(let i = 0; i < secondConnections.length; i++){
                     let user = (await userModel.find({_id: secondConnections[i]}))[0];
-                    user.healthStatus = higherUser.healthStatus + 3;
+                    user.healthStatus = Math.min(lowerUser.healthStatus + hsConst.connectivityLevel.third, user.healthStatus);
                 }
             }
 
@@ -92,8 +94,6 @@ router.post('/addFirstConnection', async (req, res) => {
                 firstUser.healthStatusOnLastCheck = firstUser.healthStatus;
             }
         }
-
-        
 
         await firstUser.save();
         await secondUser.save();
@@ -193,7 +193,7 @@ router.get('/getTemporaryConnections', async (req, res) => {
             let connectionDate = new Date(user.date);
             let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
             
-            return (dayDiff >= 14);
+            return (dayDiff >= hsConst.isolationPeriod);
         })
 
         for(let i = 0; i < user.temporaryConnections.length; i++){

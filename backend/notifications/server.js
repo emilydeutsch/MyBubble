@@ -1,6 +1,6 @@
 const express = require('express');
 const { admin } = require('./firebase-config');
-
+const keys = require('./../keys.js');
 const router = express.Router();
 
 const notification_options = {
@@ -9,7 +9,7 @@ const notification_options = {
 };
 
 router.post('/test', (req, res)=>{
-    registrationToken = "c_BjmPdxQNKB8r5tyqdNz6:APA91bERc3Q0x6EjLa4OWaMy6IeZLFMcFpvCAasIvt7u5_L8airHThuVk8_C2aMKp4gngCdq07B3Qg51ZXhuMWVk9ahvi5QO7L8afQk2bgVJq199jC8d7gt30PFFPPxO09vnfoAiFF21";
+    registrationToken = keys.notifUserKey;
 
     const message = {
       data : {
