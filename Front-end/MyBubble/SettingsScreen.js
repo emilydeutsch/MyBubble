@@ -12,27 +12,56 @@ class SettingsScreen extends React.Component{
 
     this.state = {
       
-      currentHealth : 'healthy',
+      currentHealth : '',
+      healthState : 0,
       
     };      
   }
 
+  componentDidMount(){
+    //Get health upon start
+    fetch(GLOBAL.serverURL + '/healthStatus/pollHealthStatus?id=' + GLOBAL.userID, {
+      method: 'GET'
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log("health response: ", responseJson);
+      GLOBAL.userHealth = responseJson.healthStatus;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+    
+    if(GLOBAL.userHealth == 0){
+      this.setState({currentHealth : 'have covid'});
+      this.setState({healthState : 1});
+    }else{
+      this.setState({currentHealth : 'are healthy'});
+      this.setState({healthState : 0});
+    }
+    console.log("Current Health: ", GLOBAL.userHealth);
+  }
+
   updateStatus = (selected) =>{
 
-    this.setState({currentHealth : selected});
-
+    //this.setState({currentHealth : selected});
+    console.log("Selection: ", selected);
+    console.log("current Health: ", this.state.currentHealth);
     let data = {
       id : GLOBAL.userID,
       healthStatus : "false",
     };
-
-    if(selected.localeCompare('covid') == 0){
+    this.setState({healthState : selected});
+    if(selected == 1){
       data.healthStatus = "true";
+      this.setState({currentHealth : 'have covid'});
     }
     else{
       data.healthStatus = "false";
+      this.setState({currentHealth : 'are healthy'});
     }
-
+    console.log("health state: ", this.state.healthState);
     console.log("Health:", data.healthStatus);
 
     req = GLOBAL.serverURL + '/healthStatus/updateHealthStatus';
@@ -52,7 +81,7 @@ class SettingsScreen extends React.Component{
       .catch((error) => {
         console.error(error);
       });
-
+      
   }
 
   render(){
@@ -69,13 +98,13 @@ class SettingsScreen extends React.Component{
                   width : 300,}}
                   
         //onValueChange={(selection, row) => this.updateStatus(selection, row, healthState)}
-        onValueChange={(itemValue, itemIndex) => this.updateStatus(itemValue)}
-        selectedValue={this.state.currentHealth}
+        onValueChange={(itemValue, itemIndex) => this.updateStatus(itemIndex)}
+        selectedValue={healthState[0][this.state.healthState]}
         >
           <Picker.Item label = "healthy" value= 'healthy'/>
           <Picker.Item label = "covid" value= 'covid'/>   
         </Picker>
-        <Text>You are {this.state.currentHealth}</Text>
+        <Text>You currently {this.state.currentHealth}</Text>
         </ImageBackground>
       </View>
     );

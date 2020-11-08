@@ -78,7 +78,7 @@ class SearchScreen extends React.Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log("GET response: " + responseJson);
+        console.log("GET response: " + responseJson[0]);
         if((responseJson || []).length === 0){
           this.setState({searchResult : ['Not Found']});
         }else{
@@ -94,6 +94,7 @@ class SearchScreen extends React.Component {
             dataName: nameArr,
             dataUserID : idarr,
           })
+          this.setState({searchResult : this.state.dataName});
         }
         
       })
@@ -107,14 +108,15 @@ class SearchScreen extends React.Component {
       const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
 
       this.getRequest(request);
+      
       console.log("request: " + request);
-      console.log("request data: " + this.state.data);
+      console.log("request data: " + this.state.dataName);
 
       //this.setState({dataName : text});
       
       {/* Enter code here for searching database using text string */}
 
-      this.setState({searchResult : this.state.dataName});
+      
       
       console.log(this.state.searchResult);
     }
