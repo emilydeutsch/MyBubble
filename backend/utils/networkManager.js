@@ -2,6 +2,7 @@ const _ = require('lodash');
 const mongoose = require('mongoose');
 
 const userModel = require('./../userSchema');
+const hsConst = require('./healthStatusConst.js');
 
 const mongourl = require('./../const.js').url;
 mongoose.connect(mongourl);
@@ -95,7 +96,7 @@ updateHealthStatuses = async (connections, level) =>{
 
 findLowestConnectedHealthStatus = async (connections) => {
     try {
-        let lowestConnected = 4;
+        let lowestConnected = hsConst.riskLevel.none;
 
         for(let i = 0; i < connections.length; i++){
             let id = connections[i];
@@ -103,7 +104,7 @@ findLowestConnectedHealthStatus = async (connections) => {
             
             if(currUser.healthStatus < lowestConnected){
                 lowestConnected = currUser.healthStatus;
-                if(lowestConnected == 0){
+                if(lowestConnected == hsConst.riskLevel.immediate){
                     break;
                 }
             }
