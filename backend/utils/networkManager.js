@@ -48,7 +48,7 @@ findAllConnections = async (user) => {
     }
 }
 
-findSecondConnections() = async (user) => {
+findSecondConnections = async (user) => {
     try {
         console.log(mongourl);
         let firstConnections = user.firstConnections;

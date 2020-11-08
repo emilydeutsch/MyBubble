@@ -31,7 +31,7 @@ router.post('/updateHealthStatus', async (req, res) => {
         if(newHealthStatus == hsConst.riskLevel.none && user.healthStatus > hsConst.riskLevel.immediate){
             newHealthStatus = user.healthStatus;
         } else if(newHealthStatus == hsConst.riskLevel.none && user.healthStatus == hsConst.riskLevel.immediate){
-            newHealthStatus = networkManager.findLowestConnectedHealthStatus(user.firstConnections) + hsConst.connectivityLevel.first;
+            newHealthStatus = await networkManager.findLowestConnectedHealthStatus(user.firstConnections) + hsConst.connectivityLevel.first;
         }
 
         user.healthStatus = newHealthStatus;

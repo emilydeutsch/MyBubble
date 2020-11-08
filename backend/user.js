@@ -68,31 +68,25 @@ router.post('/addFirstConnection', async (req, res) => {
             secondUser.firstConnections.push(firstUser._id.toString());
         }
         
-        firstUser.temporaryConnections.filter(tc => tc._id.toString() == secondUser._id.toString());
-        secondUser.temporaryConnections.filter(tc => tc._id.toString() == firstUser._id.toString());
+        firstUser.temporaryConnections = await firstUser.temporaryConnections.filter(tc => tc._id.toString() != secondUser._id.toString());
+        secondUser.temporaryConnections = await secondUser.temporaryConnections.filter(tc => tc._id.toString() != firstUser._id.toString());
 
-        if(abs(firstUser.healthStatus - secondUser.healthStatus) >= hsConst.differenceLevel.moderate){
+        if(Math.abs(firstUser.healthStatus - secondUser.healthStatus) >= hsConst.differenceLevel.moderate){
             let lowerUser = (firstUser.healthStatus < secondUser.healthStatus) ? firstUser : secondUser;
             let higherUser = (firstUser.healthStatus > secondUser.healthStatus) ? firstUser : secondUser;
 
             let originalHealthStatus = higherUser.healthStatus;
             if(originalHealthStatus - lowerUser.healthStatus >= hsConst.differenceLevel.moderate){
-                higherUser.healthStatus = lowerUser.healthStatus + connectivityLevel.first;
+                higherUser.healthStatus = lowerUser.healthStatus + hsConst.connectivityLevel.first;
             }
 
             if(originalHealthStatus - lowerUser.healthStatus >= hsConst.differenceLevel.major){
-                for(let i = 0; i < higherUser.firstConnections.length; i++){
-                    let user = (await userModel.find({_id: higherUser.firstConnections[i]}))[0];
-                    user.healthStatus = Math.min(lowerUser.healthStatus + hsConst.connectivityLevel.second, user.healthStatus);
-                }
+                await networkManager.updateHealthStatuses(higherUser.firstConnections, lowerUser.healthStatus + hsConst.connectivityLevel.second);   
             }
 
             if(originalHealthStatus - lowerUser.healthStatus >= hsConst.differenceLevel.immediate){
                 let secondConnections = await networkManager.findSecondConnections(higherUser);
-                for(let i = 0; i < secondConnections.length; i++){
-                    let user = (await userModel.find({_id: secondConnections[i]}))[0];
-                    user.healthStatus = Math.min(lowerUser.healthStatus + hsConst.connectivityLevel.third, user.healthStatus);
-                }
+                await networkManager.updateHealthStatuses(secondConnections, lowerUser.healthStatus + hsConst.connectivityLevel.third); 
             }
 
             if(firstUser.healthStatus != firstUser.healthStatusOnLastCheck) {
@@ -142,8 +136,7 @@ router.get('/getAllConnections', async (req, res) => {
 })
 
 router.post('/addTemporaryConnection', async (req, res) =>{
-    if(!req.body.firstID || !req.body.secondID || !req.body.date 
-        || isNan(new Date(req.body.date).valueOf())){
+    if(!req.body.firstID || !req.body.secondID || !req.body.date){
 
         res.writeHead(412, {'Content-Type' : 'text-plain'});
         res.write('Failed: Missing Fields');
@@ -152,6 +145,14 @@ router.post('/addTemporaryConnection', async (req, res) =>{
     }
 
     try {
+        let currDate = new Date();
+        let connectionDate = new Date(req.body.date);
+        let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
+        if(isNaN(new Date(req.body.date).valueOf()) || dayDiff > hsConst.isolationPeriod) {
+            let err = new Error('Date not valid');
+            throw err;
+        }
+
         let firstUser = (await userModel.find({_id: req.body.firstID}))[0];
         let secondUser = (await userModel.find({_id: req.body.secondID}))[0];
 
@@ -166,8 +167,10 @@ router.post('/addTemporaryConnection', async (req, res) =>{
         }
 
         for(let i = 0; i < firstUser.temporaryConnections.length; i++){
-            if(firstUser.temporaryConnections[i]._id.toString() == secondUser._id.toString()){
-                let err = new Error('Already a temporary connection');
+            let connection = firstUser.temporaryConnections[i];
+            if(connection._id.toString() == secondUser._id.toString() && connection.date.toString() == req.body.date.toString()){
+                console.log(req.body.date);
+                let err = new Error('Already a temporary connection on this date');
                 throw err;
             }
         }
@@ -211,12 +214,17 @@ router.get('/getTemporaryConnections', async (req, res) => {
         let temporaryConnectionsDetails = [];
 
         let currDate = new Date();
-        user.temporaryConnections.filter((user) => {
+        user.temporaryConnections = await user.temporaryConnections.filter((user) => {
             let connectionDate = new Date(user.date);
             let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
             
-            return (dayDiff >= hsConst.isolationPeriod);
-        })
+            console.log(dayDiff)
+
+            return (dayDiff < hsConst.isolationPeriod);
+        });
+
+        console.log(user.temporaryConnections)
+        await user.save();
 
         for(let i = 0; i < user.temporaryConnections.length; i++){
             let connectedUser = (await userModel.find({_id: user.temporaryConnections[i]._id}))[0];
