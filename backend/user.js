@@ -58,6 +58,11 @@ router.post('/addFirstConnection', async (req, res) => {
         firstUser = (await userModel.find({_id: req.body.firstID}))[0];
         secondUser = (await userModel.find({_id: req.body.secondID}))[0];
 
+        if(!firstUser || !secondUser){
+            let err = new Error('User not found');
+            throw err;
+        }
+
         if(!firstUser.firstConnections.includes(secondUser._id)){
             firstUser.firstConnections.push(secondUser._id.toString());
             secondUser.firstConnections.push(firstUser._id.toString());
@@ -120,6 +125,12 @@ router.get('/getAllConnections', async (req, res) => {
 
     try {
         let user = (await userModel.find({_id: userID}))[0];
+
+        if(!user){
+            let err = new Error('User not found');
+            throw err;
+        }
+
         let connections = await networkManager.findAllConnections(user);
         res.json(connections)
 
@@ -143,6 +154,11 @@ router.post('/addTemporaryConnection', async (req, res) =>{
     try {
         let firstUser = (await userModel.find({_id: req.body.firstID}))[0];
         let secondUser = (await userModel.find({_id: req.body.secondID}))[0];
+
+        if(!firstUser || !secondUser){
+            let err = new Error('User not found');
+            throw err;
+        }
 
         if(firstUser.firstConnections.includes(req.body.secondID)){
             let err = new Error('Already a first level connection');
@@ -186,6 +202,12 @@ router.get('/getTemporaryConnections', async (req, res) => {
 
     try {
         let user = (await userModel.find({_id: userID}))[0];
+
+        if(!user){
+            let err = new Error('User not found');
+            throw err;
+        }
+
         let temporaryConnectionsDetails = [];
 
         let currDate = new Date();
