@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button,Alert,ImageBackground, View, StyleSheet,Text} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import DropdownMenu from 'react-native-dropdown-menu';
 import GLOBAL from './global'
 const image = require('./images/backgroundMain.png');
 class SettingsScreen extends React.Component{
@@ -92,7 +91,7 @@ class SettingsScreen extends React.Component{
       <ImageBackground source={image} style={styles.image}>  
         <Text style={styles.text}>Health Status</Text>
         <Text>Select your health status:</Text>
-        <Picker 
+        <Picker testID = "picker"
         style = {{flex : 1,
                   height : 70,
                   width : 300,}}

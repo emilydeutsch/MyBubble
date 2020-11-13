@@ -90,9 +90,6 @@ useEffect(() => {
 
       console.log("Put?: " + doPut);
 
-      //enter here put request
-
-
     } catch (error) {
       console.log('Message', error.message);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

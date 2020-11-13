@@ -26,7 +26,7 @@ const TabScreen = () => {
                     component={CalendarStack}
                     options={{
                         tabBarIcon: ({ color, size }) => (
-                          <MaterialCommunityIcons name="calendar-month" color={color} size={35} />
+                          <MaterialCommunityIcons name="calendar-month" color={color} size={35} testID="calendar"/>
                         ),
                     }} 
                 />
@@ -35,16 +35,16 @@ const TabScreen = () => {
                     component={HomeStack} 
                     options={{
                         tabBarIcon: ({ color, size }) => (
-                          <MaterialCommunityIcons name="google-circles-extended" color={color} size={35} />
+                          <MaterialCommunityIcons name="google-circles-extended" color={color} size={35} testID="home"/>
                         ),
                     }} 
                 />
-                <Tab.Screen 
+                <Tab.Screen
                 name="Settings" 
                 component={SettingsScreen} 
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                      <MaterialCommunityIcons name="account-settings" color={color} size={35} />
+                      <MaterialCommunityIcons name="account-settings" color={color} size={35} testID="settings"/>
                     ),
                 }} 
                 />
