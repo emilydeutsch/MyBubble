@@ -43,7 +43,7 @@ class AddTempScreen extends React.Component {
         secondID : '',
         date: date,
       }
-      alert('You added a new connection');
+      alert('You added a new temporary connection');
       console.log("added: " + item);
 
       //send PUT request and add connection to first connections
@@ -98,6 +98,7 @@ class AddTempScreen extends React.Component {
             dataName: nameArr,
             dataUserID : idarr,
           })
+          this.setState({searchResult : this.state.dataName});
         }
         
       })
@@ -107,20 +108,25 @@ class AddTempScreen extends React.Component {
     }
     
     searchSubmit = (text) => {
-      
-      const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
 
-      this.getRequest(request);
-      console.log("request: " + request);
-      console.log("request data: " + this.state.data);
-
-      //this.setState({dataName : text});
+      if(/^[A-Za-z\s\-]+$/.test(text)){
       
-      {/* Enter code here for searching database using text string */}
+        const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
 
-      this.setState({searchResult : this.state.dataName});
-      
-      console.log(this.state.searchResult);
+        this.getRequest(request);
+        console.log("request: " + request);
+        console.log("request data: " + this.state.data);
+
+        //this.setState({dataName : text});
+        
+        {/* Enter code here for searching database using text string */}
+
+        this.setState({searchResult : this.state.dataName});
+        
+        console.log(this.state.searchResult);
+      }else{
+        alert("Please enter a valid name");
+      }
     }
 
     isEmpty =(obj) =>{

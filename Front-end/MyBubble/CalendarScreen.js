@@ -87,7 +87,7 @@ class CalendarScreen extends React.Component {
         //indicatorColor: '#ACD7CA',
       }}
     />
-      <Icon.Button testID = 'add'
+      <Icon.Button testID = 'add_tmp'
           name="account-plus"
           backgroundColor="#ACD7CA"
           onPress={() => {
