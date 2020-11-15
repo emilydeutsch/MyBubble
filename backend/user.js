@@ -17,30 +17,29 @@ mongoose.connect(mongourl);
  * 402, otherwise returns 200, w/ a JSON representing
  * the new user. 
  */
-router.put('/newUser', (req,res) => {
-    userFields = req.body;
-    user = new userModel({firstName: userFields.firstName, lastName: userFields.lastName, email: userFields.email});
-    userModel.create(user, (err, result) => {
-        if (err){
-            res.writeHead(412);
-            res.write(err.toString());
-            res.send();
-        } else {
-            res.json(result);
-        }
-    });
+router.put('/newUser', async(req, res) => {
+    try {
+        userFields = req.body;
+        user = await new userModel({firstName: userFields.firstName, lastName: userFields.lastName, email: userFields.email});
+        await userModel.create(user); 
+        res.send(user);
+    } catch (err){
+        res.writeHead(412);
+        res.write(err.toString());
+        res.send();
+    }
 });
 
-router.get('/findByQuery', (req, res) => {
-    userModel.find(req.query).exec((err, result) => {
-        if(err) {
-            res.writeHead(412);
-            res.write(err.toString());
-            res.send();
-        } else {
-            res.json(result);
-        }
-    })
+router.get('/findByQuery', async(req, res) => {
+    try {
+        user = await userModel.find(req.query);
+        res.json(user);
+    }
+    catch (err){
+        res.writeHead(412);
+        res.write(err.toString());
+        res.send();
+    }   
 });
 
 //Add conection by ID, respond only status code and success/failure message
@@ -63,11 +62,14 @@ router.post('/addFirstConnection', async (req, res) => {
             throw err;
         }
 
-        if(!firstUser.firstConnections.includes(secondUser._id)){
-            firstUser.firstConnections.push(secondUser._id.toString());
-            secondUser.firstConnections.push(firstUser._id.toString());
+        if(firstUser.firstConnections.includes(secondUser._id.toString())){
+            let err = new Error('Users already connected');
+            throw err;
         }
         
+        firstUser.firstConnections.push(secondUser._id.toString());
+        secondUser.firstConnections.push(firstUser._id.toString());
+
         firstUser.temporaryConnections = await firstUser.temporaryConnections.filter(tc => tc._id.toString() != secondUser._id.toString());
         secondUser.temporaryConnections = await secondUser.temporaryConnections.filter(tc => tc._id.toString() != firstUser._id.toString());
 
@@ -136,10 +138,10 @@ router.get('/getAllConnections', async (req, res) => {
 })
 
 router.post('/addTemporaryConnection', async (req, res) =>{
-    if(!req.body.firstID || !req.body.secondID || !req.body.date){
+    if(!req.body.firstID || !req.body.secondID || !req.body.date || (req.body.firstID == req.body.secondID)){
 
         res.writeHead(412, {'Content-Type' : 'text-plain'});
-        res.write('Failed: Missing Fields');
+        res.write('Failed: Missing or Invalid Fields');
         res.send();
         return;
     }
@@ -169,7 +171,6 @@ router.post('/addTemporaryConnection', async (req, res) =>{
         for(let i = 0; i < firstUser.temporaryConnections.length; i++){
             let connection = firstUser.temporaryConnections[i];
             if(connection._id.toString() == secondUser._id.toString() && connection.date.toString() == req.body.date.toString()){
-                console.log(req.body.date);
                 let err = new Error('Already a temporary connection on this date');
                 throw err;
             }
@@ -217,13 +218,10 @@ router.get('/getTemporaryConnections', async (req, res) => {
         user.temporaryConnections = await user.temporaryConnections.filter((user) => {
             let connectionDate = new Date(user.date);
             let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
-            
-            console.log(dayDiff)
 
             return (dayDiff < hsConst.isolationPeriod);
         });
 
-        console.log(user.temporaryConnections)
         await user.save();
 
         for(let i = 0; i < user.temporaryConnections.length; i++){

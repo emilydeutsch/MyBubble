@@ -8,10 +8,7 @@ const mongourl = require('./../const.js').url;
 mongoose.connect(mongourl);
 
 findAllConnections = async (user) => {
-    console.log(user);
-
     try {
-        console.log(mongourl);
         let firstConnections = user.firstConnections;
 
         let secondConnections = [];
@@ -28,7 +25,6 @@ findAllConnections = async (user) => {
         }
 
         secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
-        console.log(secondConnections);
         invalidItems = invalidItems.concat(secondConnections);
 
         let thirdConnections = [];
@@ -40,7 +36,6 @@ findAllConnections = async (user) => {
         }
 
         thirdConnections = thirdConnections.filter(connection => !invalidItems.includes(connection));
-        console.log(thirdConnections);
 
         return {firstConnections, secondConnections, thirdConnections};
     } catch (err) {
@@ -50,7 +45,6 @@ findAllConnections = async (user) => {
 
 findSecondConnections = async (user) => {
     try {
-        console.log(mongourl);
         let firstConnections = user.firstConnections;
 
         let secondConnections = [];
