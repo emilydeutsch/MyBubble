@@ -34,6 +34,7 @@ class SearchScreen extends React.Component {
     }
     
     addSelection =(item, index) =>{
+      
       const {navigation} = this.props;
       let userIDs = {
         firstID : GLOBAL.userID,
@@ -51,7 +52,8 @@ class SearchScreen extends React.Component {
 
       this.putRequest(req,userIDs);
       navigation.navigate('Home');
-      }
+      
+    }
 
     putRequest = (req, data) =>{
       fetch(req, {
@@ -104,21 +106,24 @@ class SearchScreen extends React.Component {
     }
     
     searchSubmit = (text) => {
-      
-      const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
 
-      this.getRequest(request);
+      if(/^[A-Za-z\s\-]+$/.test(text)){
       
-      console.log("request: " + request);
-      console.log("request data: " + this.state.dataName);
+        const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
 
-      //this.setState({dataName : text});
-      
-      {/* Enter code here for searching database using text string */}
+        this.getRequest(request);
+        
+        console.log("request: " + request);
+        console.log("request data: " + this.state.dataName);
 
-      
-      
-      console.log(this.state.searchResult);
+        //this.setState({dataName : text});
+        
+        {/* Enter code here for searching database using text string */}
+
+        console.log(this.state.searchResult);
+      }else{
+        alert("Please enter a valid name");
+      }
     }
 
     isEmpty =(obj) =>{
