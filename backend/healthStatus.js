@@ -18,7 +18,15 @@ router.post('/updateHealthStatus', async (req, res) => {
         return;
     }
 
-    let newHealthStatus = (req.body.healthStatus == "true") ? hsConst.riskLevel.immediate : hsConst.riskLevel.none;
+    if(req.body.healthStatus.toString() != 'true' 
+        && req.body.healthStatus.toString() != 'false'){
+        res.writeHead(412, {'Content-Type' : 'text-plain'});
+        res.write('Failed: Missing Fields or invalid');
+        res.send();
+        return;
+    }
+
+    let newHealthStatus = (req.body.healthStatus.toString() == "true") ? hsConst.riskLevel.immediate : hsConst.riskLevel.none;
 
     try{
         let user = (await userModel.find({_id : req.body.id}))[0];
