@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Button,Alert,ImageBackground, View, StyleSheet,Text} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import GLOBAL from './global'
+import QRCode from 'react-native-qrcode-svg';
+
 const image = require('./images/backgroundMain.png');
 class SettingsScreen extends React.Component{
 
@@ -104,6 +106,11 @@ class SettingsScreen extends React.Component{
           <Picker.Item label = "covid" value= 'covid'/>   
         </Picker>
         <Text>You currently {this.state.currentHealth}</Text>
+
+        <Text>Your MyBubble ID</Text>
+        <QRCode
+          value = {GLOBAL.userID.toString()}
+        />
         </ImageBackground>
       </View>
     );

@@ -108,7 +108,7 @@ describe('UI Test', () => {
 
     it('Add Temporary Connection', async () => {
       await expect(element(by.id('add_tmp'))).toBeVisible();
-      await element(by.text("18")).tap();
+      await element(by.text("19")).tap();
       await element(by.id('add_tmp')).tap();
     });
 
@@ -161,14 +161,14 @@ describe('UI Test', () => {
     it('Add temporary existing user', async () => {
       await expect(element(by.id('search'))).toBeVisible();
       await element(by.id('search')).tap();
-      await element(by.id('search')).typeText("Super");
+      await element(by.id('search')).typeText("Hank");
       await element(by.id('search')).tapReturnKey();
-      await expect(element(by.text("Super Mario"))).toBeVisible();
-      await element(by.text("Super Mario")).tap();
+      await expect(element(by.text("Hank Hill"))).toBeVisible();
+      await element(by.text("Hank Hill")).tap();
       await expect(element(by.text("You added a new temporary connection"))).toBeVisible();
       await element(by.text('OK')).tap();
-      await element(by.text("18")).tap();
-      await expect(element(by.text("Super Mario"))).toBeVisible();
+      await element(by.text("19")).tap();
+      await expect(element(by.text("Hank Hill"))).toBeVisible();
     });
 
     //Change health status again
@@ -188,6 +188,7 @@ describe('UI Test', () => {
     //Return to home screen
     it('Go to home screen', async () => {
       await element(by.text('Home')).tap();
+      await expect(element(by.id('add'))).toBeVisible();
     });
   
   });

@@ -253,15 +253,19 @@ class HomeScreen extends React.Component{
           name="account-plus"
           backgroundColor="#ACD7CA"
           onPress={() => {
-            this.props.navigation.navigate('AddConnection', {
-              first: this.state.firstList,
-              second : this.state.secondList,
-              third : this.state.thirdList,
-            });
             navigation.navigate('AddConnection')
           }}
-            >
+        >
           Add Connection
+        </Icon.Button>
+        <Icon.Button testID = 'camera'
+          name="camera-plus"
+          backgroundColor="#ACD7CA"
+          onPress={() => {
+            navigation.navigate('Camera')
+          }}
+        >
+          Camera
         </Icon.Button>
         </View>
       
