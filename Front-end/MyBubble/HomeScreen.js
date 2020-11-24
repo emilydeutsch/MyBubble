@@ -2,6 +2,13 @@ import * as React from 'react';
 import { View, Button, Text,Image,ImageBackground, Dimensions, StyleSheet} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import GLOBAL from './global'
+import {
+  Menu,
+  MenuProvider,
+  MenuOptions,
+  MenuTrigger,
+  renderers,
+} from 'react-native-popup-menu';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const image = require('./images/backgroundMain.png');
 var badgeImages = [
@@ -241,10 +248,39 @@ class HomeScreen extends React.Component{
 
     const {navigation} = this.props;
 
+    const { Popover } = renderers
+
     return (
       <View style= {styles.container} >
     <ImageBackground source={image} style={styles.image}>
-        <Image style = {styles.badge} source={badgeImages[this.state.healthStatus]}/>    
+    <Image style = {styles.badge} source={badgeImages[this.state.healthStatus]}/> 
+    <MenuProvider style={styles.pop}>
+    <Menu renderer={Popover}>
+      <MenuTrigger style={styles.menuTrigger} >
+
+       <Text>Get Info</Text>
+
+      </MenuTrigger>
+      <MenuOptions style={styles.menuOptions}>
+        <Text style={{fontSize:20}}>Your Health Status</Text>
+      <View style={styles.rows}>
+      <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[0]}/></View> 
+        <View style={{ width: 120}}><Text>You have COVID-19</Text></View>
+      <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[1]}/></View> 
+        <View style={{ width: 120}}><Text>A first connection has COVID-19</Text></View>
+      <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[2]}/></View> 
+        <View style={{ width: 120}}><Text>A second connection has COVID-19</Text></View>
+      <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[3]}/></View> 
+        <View style={{ width: 120}}><Text>A third connection has COVID-19</Text></View>
+      <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[4]}/></View> 
+        <View style={{ width: 120}}><Text>No 1st,2nd or 3rd connections have COVID-19</Text></View>
+        </View>
+    </MenuOptions>
+
+
+    </Menu>
+    
+
         <Text style={styles.text}>First: {this.state.firstList.length}</Text>
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
@@ -267,8 +303,9 @@ class HomeScreen extends React.Component{
         >
           Camera
         </Icon.Button>
+        
         </View>
-      
+        </MenuProvider>
         </ImageBackground>
       </View>
     );
@@ -299,7 +336,33 @@ class HomeScreen extends React.Component{
     badge:{
       width: 100,
       height: 100,
-    }
+    },
+    smallbadge:{
+      width: 60,
+      height: 60,
+    },
+    pop: {
+      flex: 1,
+      width: 300,
+      resizeMode: "cover",
+      justifyContent: "center",
+      alignItems: 'center',
+    },
+    menuOptions: {
+      padding: 20,
+    },
+    menuTrigger: {
+      padding: 5,
+    },
+    rows: {
+      flex: 1,
+      width:200,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'flex-start' // if you want to fill rows left to right
+    },
+
+
   });
 
 export default HomeScreen;
