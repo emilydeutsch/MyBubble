@@ -161,14 +161,14 @@ describe('UI Test', () => {
     it('Add temporary existing user', async () => {
       await expect(element(by.id('search'))).toBeVisible();
       await element(by.id('search')).tap();
-      await element(by.id('search')).typeText("Jimmy");
+      await element(by.id('search')).typeText("Hank");
       await element(by.id('search')).tapReturnKey();
-      await expect(element(by.text("Jimmy Neutron"))).toBeVisible();
-      await element(by.text("Jimmy Neutron")).tap();
+      await expect(element(by.text("Hank Hill"))).toBeVisible();
+      await element(by.text("Hank Hill")).tap();
       await expect(element(by.text("You added a new temporary connection"))).toBeVisible();
       await element(by.text('OK')).tap();
       await element(by.text("19")).tap();
-      await expect(element(by.text("Jimmy Neutron"))).toBeVisible();
+      await expect(element(by.text("Hank Hill"))).toBeVisible();
     });
 
     //Change health status again
