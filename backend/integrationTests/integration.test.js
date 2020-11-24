@@ -92,7 +92,7 @@ describe('User adds friend as first connection', () => {
     done()
   })
 })
-
+/*
 /* Integration Test Health Status */
 describe('User changes their healthStatus to infected w/ Covid-19', () => {
   it('All Connections of the user will potentially have their healthStatus changed, they can find their new health by polling', async (done) => {
@@ -399,6 +399,7 @@ describe('A user adds a temporary connection', () => {
     done()
   })
 })
+
 
 
 afterAll(() => setTimeout(() => process.exit(), 500));
