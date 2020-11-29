@@ -14,7 +14,7 @@ services:
 script: 
   - cd backend
   - npm install
-  - cd ../utils
+  - cd utils
   - npm install
   - cd ..unitTests/userModuleNoMockDB
   - npm install
