@@ -6,7 +6,7 @@ const mockValues = require('./healthStatusModuleMockValues.js');
 const app = require('../../app.js').app;
 const request = supertest(app);
 
-mongoose.connect('mongodb://localhost:27018/mybubbletest-2');
+mongoose.connect('mongodb://localhost/mybubbletest-2');
 
 jest.mock('./../../utils/networkManager.js');
 
