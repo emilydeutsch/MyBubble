@@ -42,6 +42,51 @@ router.get('/findByQuery', async(req, res) => {
     }   
 });
 
+router.get('/findAllMatching', async(req, res) => {
+    if(!req.query.searchString){
+        res.writeHead(412, {'Content-Type' : 'text-plain'});
+        res.write('Failed: Not given a search string');
+        res.send();
+        return;
+    }
+    try {
+        let searchString = req.query.searchString.toString();
+        let subStrs = searchString.split(" ");
+
+        let reg = '';
+        /* Put together an OR regex of all substrings */
+        if(subStrs.length > 1){
+            reg = '('
+
+            for (let i = 0; i < subStrs.length; i++){
+                reg += subStrs[i];
+                reg += (i == subStrs.length - 1) ? ')' : "|";
+            }
+        } else {
+            reg = subStrs[0]; 
+        }
+        console.log(reg);
+        console.log(subStrs.length);
+        if(subStrs.length <= 1){
+            users = await userModel.find()
+            .or([{firstName: { $regex: '^' + reg, $options: 'i'}},
+                {lastName: { $regex: '^' + reg, $options: 'i'}},
+                {email: { $regex: '^' + reg, $options: 'i'}}]);
+        } else {
+            users = await userModel.find()
+            .and([{firstName: { $regex: '^' + reg, $options: 'i'}},
+                {lastName: { $regex: '^' + reg, $options: 'i'}}])
+        }
+
+        res.json(users);
+    }
+    catch (err){
+        res.writeHead(412);
+        res.write(err.toString());
+        res.send();
+    }   
+});
+
 //Add conection by ID, respond only status code and success/failure message
 router.post('/addFirstConnection', async (req, res) => {
     if(!req.body.firstID || !req.body.secondID || req.body.firstID == req.body.secondID){
