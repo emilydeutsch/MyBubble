@@ -12,7 +12,7 @@ services:
   - mongodb
 
 script: 
-  - backend
+  - cd backend
   - npm install
   - cd ../utils
   - npm install
