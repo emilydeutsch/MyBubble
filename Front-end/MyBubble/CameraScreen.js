@@ -15,28 +15,50 @@ import { RNCamera } from 'react-native-camera';
 
 class CameraScreen extends Component {
   onSuccess = e => {
-    Linking.openURL(e.data).catch(err =>
-      console.error('An error occured', err)
-    );
+    // Linking.openURL(e.data).catch(err =>
+    //   console.error('An error occured', err)
+    // );
+
+    const {navigation} = this.props;
+      let userIDs = {
+        firstID : GLOBAL.userID,
+        secondID : e.data,
+      }
+      alert('You added a new connection');
+      console.log("added: " + e.data);
+
+      var req = GLOBAL.serverURL + '/user/addFirstConnection';
+
+      this.postRequest(req,userIDs);
+      navigation.navigate('Home');
+
   };
+
+  postRequest = (req, data) =>{
+    fetch(req, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    .then((response) => response.text())
+    .then((responseJson) => {
+      console.log("PUT response" + responseJson);
+      if(responseJson.length == 1){
+        alert("Invalid ID Code");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
 
   render() {
     return (
       <QRCodeScanner
         onRead={this.onSuccess}
         flashMode={RNCamera.Constants.FlashMode.torch}
-        topContent={
-          <Text style={styles.centerText}>
-            Go to{' '}
-            <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on
-            your computer and scan the QR code.
-          </Text>
-        }
-        bottomContent={
-          <TouchableOpacity style={styles.buttonTouchable}>
-            <Text style={styles.buttonText}>OK. Got it!</Text>
-          </TouchableOpacity>
-        }
       />
     );
   }
