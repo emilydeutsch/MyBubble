@@ -12,10 +12,17 @@ services:
   - mongodb
 
 script: 
-  - cd backend/unitTests/userModuleNoMockDB
+  - backend
+  - npm install
+  - cd ../utils
+  - npm install
+  - cd ..unitTests/userModuleNoMockDB
+  - npm install
   - npm run test
   - cd ../healthStatusModuleNoMockDB
+  - npm install
   - npm run test
+  - npm install
   - cd ../../integrationTests
   - npm run test
 
