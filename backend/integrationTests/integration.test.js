@@ -231,7 +231,7 @@ describe('User signs up for the first time', () => {
     });
 
     expect(res3.statusCode).toEqual(412)
-    expect(res3.text).toEqual('MongoError: E11000 duplicate key error collection: mybubbletest-2.users index: email_1 dup key: { email: "redlikeroses@gmail.com" }')
+    expect(res3.text).toMatch(/MongoError: E11000 duplicate key error/)
     done()
   })
 })
@@ -314,7 +314,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleYang._id.toString(),
-        'date' : '2020-11-15'
+        'date' : '2020-11-29'
       })
 
       expect(res.statusCode).toEqual(200)
@@ -331,7 +331,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleYang._id.toString(),
-        'date' : '2020-11-15'
+        'date' : '2020-11-29'
       })
 
       expect(res2.statusCode).toEqual(412)
@@ -344,7 +344,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleYang._id.toString(),
-        'date' : '2020-11-16'
+        'date' : '2020-11-30'
       })
 
       expect(res3.statusCode).toEqual(200)
@@ -361,7 +361,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleJacob._id.toString(),
-        'date' : '2020-11-15'
+        'date' : '2020-11-30'
       })
 
       expect(res4.statusCode).toEqual(200)

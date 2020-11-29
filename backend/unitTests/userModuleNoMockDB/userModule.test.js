@@ -249,7 +249,7 @@ describe('newUser', () => {
       })
 
     expect(res.statusCode).toEqual(412)
-    expect(res.text).toEqual('MongoError: E11000 duplicate key error collection: mybubbletest-2.users index: email_1 dup key: { email: "faker@gamil.com" }')
+    expect(res.text).toMatch(/MongoError: E11000 duplicate key error/)
     done()
   })
 })
