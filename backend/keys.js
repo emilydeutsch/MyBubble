@@ -1,0 +1,3 @@
+notifUserKey = "c_BjmPdxQNKB8r5tyqdNz6:APA91bERc3Q0x6EjLa4OWaMy6IeZLFMcFpvCAasIvt7u5_L8airHThuVk8_C2aMKp4gngCdq07B3Qg51ZXhuMWVk9ahvi5QO7L8afQk2bgVJq199jC8d7gt30PFFPPxO09vnfoAiFF21";
+
+module.exports = {notifUserKey};
