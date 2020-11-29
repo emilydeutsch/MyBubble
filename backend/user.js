@@ -65,8 +65,7 @@ router.get('/findAllMatching', async(req, res) => {
         } else {
             reg = subStrs[0]; 
         }
-        console.log(reg);
-        console.log(subStrs.length);
+
         if(subStrs.length <= 1){
             users = await userModel.find()
             .or([{firstName: { $regex: '^' + reg, $options: 'i'}},
