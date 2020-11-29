@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const { admin } = require('./firebase-config');
 const keys = require('./../keys.js');
@@ -50,4 +51,4 @@ router.post('/test', (req, res)=>{
 })
 
 module.exports = router;
-
+*/
