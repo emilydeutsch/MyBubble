@@ -9,7 +9,7 @@ const { rest } = require('lodash');
 
 const request = supertest(app);
 
-mongoose.connect('mongodb://localhost:27018/mybubbletest-2');
+mongoose.connect('mongodb://localhost/mybubbletest-2');
 
 
 
