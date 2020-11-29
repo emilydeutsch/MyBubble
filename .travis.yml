@@ -16,7 +16,7 @@ script:
   - npm install
   - cd utils
   - npm install
-  - cd ..unitTests/userModuleNoMockDB
+  - cd ../unitTests/userModuleNoMockDB
   - npm install
   - npm run test
   - cd ../healthStatusModuleNoMockDB
