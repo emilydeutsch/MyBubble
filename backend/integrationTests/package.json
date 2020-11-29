@@ -12,6 +12,7 @@
     "jest": "^26.6.1",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.11",
-    "supertest": "^6.0.0"
+    "supertest": "^6.0.0",
+    "lodash": "^4.17.20"
   }
 }

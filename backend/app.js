@@ -10,6 +10,6 @@ app.use(express.json());
 
 app.use('/user', userRoute);
 app.use('/healthStatus', healthStatusRoute)
-app.use('/notifications', notificationRoute)
+//app.use('/notifications', notificationRoute)
 
 module.exports = {app};
