@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-
+import GLOBAL from './global'
 import {
   AppRegistry,
   StyleSheet,
@@ -14,7 +14,7 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 
 class CameraScreen extends Component {
-  onSuccess = e => {
+  onSuccess = (e) => {
     // Linking.openURL(e.data).catch(err =>
     //   console.error('An error occured', err)
     // );
@@ -22,10 +22,11 @@ class CameraScreen extends Component {
     const {navigation} = this.props;
       let userIDs = {
         firstID : GLOBAL.userID,
-        secondID : e.data,
+        secondID : '',
       }
-      alert('You added a new connection');
-      console.log("added: " + e.data);
+      userIDs.secondID = e.data;
+      //alert('You added a new connection');
+      console.log("added: " + userIDs.secondID);
 
       var req = GLOBAL.serverURL + '/user/addFirstConnection';
 
@@ -45,8 +46,13 @@ class CameraScreen extends Component {
     .then((response) => response.text())
     .then((responseJson) => {
       console.log("PUT response" + responseJson);
-      if(responseJson.length == 1){
-        alert("Invalid ID Code");
+      
+      if(responseJson[0] == 'E'){
+        alert("Users Already Connected");
+      }else if(responseJson[0] == 'C'){
+        alert('Invalid ID');
+      }else{
+        alert('You added a new connection');
       }
     })
     .catch((error) => {
