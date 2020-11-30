@@ -43,7 +43,7 @@ class AddTempScreen extends React.Component {
         secondID : '',
         date: date,
       }
-      alert('You added a new temporary connection');
+      
       console.log("added: " + item);
 
       //send PUT request and add connection to first connections
@@ -68,7 +68,11 @@ class AddTempScreen extends React.Component {
       .then((response) => response.text())
       .then((responseJson) => {
         console.log("PUT response" + responseJson);
-        
+        if(responseJson[0] == 'E'){
+          alert("Users Already Connected");
+        }else{
+          alert('You added a new temporary connection');
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -111,7 +115,7 @@ class AddTempScreen extends React.Component {
 
       if(/^[A-Za-z\s\-]+$/.test(text)){
       
-        const request = GLOBAL.serverURL+'/user/findByQuery?firstName='+text;
+        const request = GLOBAL.serverURL+'/user/findAllMatching?searchString='+text;
 
         this.getRequest(request);
         console.log("request: " + request);
