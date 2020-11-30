@@ -70,8 +70,7 @@ router.get('/findAllMatching', async(req, res) => {
             users = await userModel.find()
             .or([{firstName: { $regex: '^' + reg, $options: 'i'}},
                 {lastName: { $regex: '^' + reg, $options: 'i'}},
-                {email: { $regex: '^' + reg, $options: 'i'}},
-                {_id: { $regex: '^' + reg, $options: 'i'}}]);
+                {email: { $regex: '^' + reg, $options: 'i'}}]);
         } else {
             users = await userModel.find()
             .and([{firstName: { $regex: '^' + reg, $options: 'i'}},
