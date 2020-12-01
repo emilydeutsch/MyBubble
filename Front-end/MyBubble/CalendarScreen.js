@@ -33,7 +33,7 @@ class CalendarScreen extends React.Component {
       if((responseJson || []).length === 0){
         this.setState({searchResult : ['Not Found']});
       }else{
-        //TODO: 
+
         var nameArr = [];
         var healthArr = [];
         var i;

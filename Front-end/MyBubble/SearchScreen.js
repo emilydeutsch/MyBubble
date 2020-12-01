@@ -66,7 +66,7 @@ class SearchScreen extends React.Component {
       .then((responseJson) => {
         console.log("PUT response" + responseJson);
         if(responseJson[0] == 'E'){
-          alert("Users Already Connected");
+          alert("You Are Already Connected");
         }else{
           alert('You added a new connection');
         }
@@ -85,7 +85,8 @@ class SearchScreen extends React.Component {
       .then((responseJson) => {
         console.log("GET response: " + responseJson[0]);
         if((responseJson || []).length === 0){
-          this.setState({searchResult : ['Not Found']});
+          //this.setState({searchResult : ['Not Found']});
+          alert("User Not Found");
         }else{
           var nameArr = [];
           var idarr = [];
@@ -161,7 +162,9 @@ class SearchScreen extends React.Component {
         renderItem={({item, index}) => {
           return <View><TouchableOpacity
             onPress={() => this.addSelection(item,index)}
-          ><Text style={styles.item} >{item}</Text></TouchableOpacity></View>}
+          ><Text style={styles.item} >{item}</Text>
+          <Text style={styles.itemID}>ID: {this.state.dataUserID[index]}</Text>
+          </TouchableOpacity></View>}
         }
         ItemSeparatorComponent={ItemSeparatorView}
           />
@@ -177,6 +180,14 @@ class SearchScreen extends React.Component {
     item:{
       padding: 10,
       fontSize: 18,
+      height: 44,
+      color: 'black',
+      width: 370,
+      backgroundColor:'white'
+    },
+    itemID:{
+      padding: 10,
+      fontSize: 11,
       height: 44,
       color: 'black',
       width: 370,
