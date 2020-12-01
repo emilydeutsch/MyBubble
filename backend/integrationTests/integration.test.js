@@ -97,7 +97,7 @@ describe('User adds friend as first connection', () => {
 describe('User changes their healthStatus to infected w/ Covid-19', () => {
   it('All Connections of the user will potentially have their healthStatus changed, they can find their new health by polling', async (done) => {
 
-    await userModel.deleteOne({firstName: "Ruby"});
+    await userModel.deleteMany({firstName: "Ruby"});
     await userModel.deleteOne({firstName: "Yang"});
 
     await userModel.deleteOne({firstName: "Jacob"});  
@@ -184,6 +184,41 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     expect(res4.body._id.toString()).toEqual(exampleBuilder._id.toString())
     expect(res4.body.healthStatus).toEqual(2);
 
+    const res5 = await request
+    .post('/healthStatus/updateHealthStatus')
+    .set('Content-Type', 'application/json')
+    .send({
+      'id': exampleBuilder._id.toString(),
+      'healthStatus' : false
+    });
+
+    expect(res5.statusCode).toEqual(200)
+    expect(res5.body).toHaveProperty('healthStatus');
+    expect(res5.body).toHaveProperty('_id');
+    expect(res5.body._id.toString()).toEqual(exampleBuilder._id.toString())
+    expect(res5.body.healthStatus).toEqual(2);
+
+    exampleBuilder.healthStatus = 0;
+    exampleTaker.healthStatus = 0;
+
+    await exampleBuilder.save();
+    await exampleTaker.save();
+
+    const res6 = await request
+    .post('/healthStatus/updateHealthStatus')
+    .set('Content-Type', 'application/json')
+    .send({
+      'id': exampleBuilder._id.toString(),
+      'healthStatus' : false
+    });
+
+    expect(res6.statusCode).toEqual(200)
+    expect(res6.body).toHaveProperty('healthStatus');
+    expect(res6.body).toHaveProperty('_id');
+    expect(res6.body._id.toString()).toEqual(exampleBuilder._id.toString())
+    expect(res6.body.healthStatus).toEqual(1);
+
+    await console.log(exampleBuilder)
     done()
   })
 })
@@ -238,9 +273,12 @@ describe('User signs up for the first time', () => {
 
 /* Integration Test, Searching for an existing user*/
 describe('Searching for an existing user', () => {
-  it('After a user signs up you can search for them by email, first name, last name or id', async (done) => {
+  it('After a user signs up you can search for them by email, first name, last name, id or regex matching', async (done) => {
 
-    await userModel.deleteOne({firstName: "Ruby"});    
+    await userModel.deleteMany({firstName: "Ruby"});
+    await userModel.deleteMany({lastName: "Rose"});
+    await userModel.deleteMany({lastName: "Ruby"});
+
     let exampleRuby = await new userModel({firstName: "Ruby", lastName: "Rose", email: "ruby@itest.com"});
     await userModel.create(exampleRuby);
 
@@ -275,6 +313,22 @@ describe('Searching for an existing user', () => {
     expect(res4.body.length).toEqual(1);
     expect(res4.body[0]).toHaveProperty('_id');
     expect(res4.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
+
+    const res5 = await request
+    .get('/user/findAllMatching?searchString=ru')
+    .send()
+    expect(res5.statusCode).toEqual(200)
+    expect(res5.body.length).toEqual(1);
+    expect(res5.body[0]).toHaveProperty('_id');
+    expect(res5.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
+
+    const res6 = await request
+    .get('/user/findAllMatching?searchString=ru Ro')
+    .send()
+    expect(res6.statusCode).toEqual(200)
+    expect(res6.body.length).toEqual(1);
+    expect(res6.body[0]).toHaveProperty('_id');
+    expect(res6.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
 
     done()
   })
@@ -314,7 +368,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleYang._id.toString(),
-        'date' : '2020-11-29'
+        'date' : '2021-11-29'
       })
 
       expect(res.statusCode).toEqual(200)
@@ -331,7 +385,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleYang._id.toString(),
-        'date' : '2020-11-29'
+        'date' : '2021-11-29'
       })
 
       expect(res2.statusCode).toEqual(412)
@@ -344,7 +398,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleYang._id.toString(),
-        'date' : '2020-11-30'
+        'date' : '2021-11-30'
       })
 
       expect(res3.statusCode).toEqual(200)
@@ -361,7 +415,7 @@ describe('A user adds a temporary connection', () => {
       .send({
         'firstID' : exampleRuby._id.toString(),
         'secondID' : exampleJacob._id.toString(),
-        'date' : '2020-11-30'
+        'date' : '2021-11-30'
       })
 
       expect(res4.statusCode).toEqual(200)
@@ -396,11 +450,156 @@ describe('A user adds a temporary connection', () => {
       expect(res6.body[i]).toHaveProperty('date')
       expect(res6.body[i].date == '2020-11-1').toEqual(false)
     }
+
+    exampleRuby.firstConnections.push(exampleJacob._id.toString());
+    exampleJacob.firstConnections.push(exampleRuby._id.toString());
+
+    exampleRuby.save();
+    exampleJacob.save();
+
+    const res7 = await request
+      .post('/user/addTemporaryConnection')
+      .set('Content-Type', 'application/json')
+      .send({
+        'firstID' : exampleRuby._id.toString(),
+        'secondID' : exampleJacob._id.toString(),
+        'date' : '2021-10-23'
+      })
+      expect(res7.statusCode).toEqual(412)
+      expect(res7.text).toEqual('Error: Already a first level connection')
+
+    
     done()
   })
 })
 
+/* Bad request tests */
+describe('User attempts to send a bad request or refer to non-existent user', () => {
+  it('Malformed or requests or requests that refer to a non-existent user should be caught and returned with an error', async (done) => {
 
+    await userModel.deleteMany({firstName: "Ruby"});
+    await userModel.deleteOne({firstName: "Jacob"});  
+
+    let exampleRuby = await new userModel({firstName: "Ruby", lastName: "Rose", email: "ruby@itest.com"});
+
+    let exampleJacob = await new userModel({firstName: "Jacob", lastName: "Two-Two", email: "jacob@itest.com"});
+
+    await userModel.create(exampleRuby);
+
+    await userModel.create(exampleJacob);
+
+
+    const res1 = await request
+    .post('/user/addFirstConnection')
+    .set('Content-Type', 'application/json')
+    .send({
+      'firstID' : exampleJacob._id.toString()
+    })
+
+    expect(res1.statusCode).toEqual(412)
+    expect(res1.text).toEqual('Failed: Missing User IDs or invalid')
+
+    await userModel.deleteOne({_id: "5f9a0e132ed87012457c43f9"});
+    const res2 = await request
+    .post('/user/addFirstConnection')
+    .set('Content-Type', 'application/json')
+    .send({
+      'firstID' : exampleJacob._id.toString(),
+      'secondID' : "5f9a0e132ed87012457c43f9",
+    })
+
+    expect(res2.statusCode).toEqual(412)
+    expect(res2.text).toEqual('Error: User not found');
+    
+    const res3 = await request
+    .get('/user/findAllMatching')
+    .send()
+    expect(res3.statusCode).toEqual(412)
+    expect(res3.text).toEqual('Failed: Not given a search string')
+
+    const res4 = await request
+    .get('/user/getAllConnections?_id=')
+    .send()
+    expect(res4.statusCode).toEqual(412)
+    expect(res4.text).toEqual('Failed: Missing User IDs or invalid')
+  
+
+    const res5 = await request
+    .get('/user/getAllConnections?_id=5f9a0e132ed87012457c43f9')
+    expect(res5.statusCode).toEqual(412)
+    expect(res5.text).toEqual('Error: User not found')
+
+    const res6 = await request
+      .post('/user/addTemporaryConnection')
+      .set('Content-Type', 'application/json')
+      .send({
+        'firstID' : exampleRuby._id.toString(),
+        'date' : '2020-11-29'
+      })
+      expect(res6.statusCode).toEqual(412)
+      expect(res6.text).toEqual('Failed: Missing or Invalid Fields')
+
+    const res7 = await request
+    .post('/user/addTemporaryConnection')
+    .set('Content-Type', 'application/json')
+    .send({
+      'firstID' : exampleRuby._id.toString(),
+      'secondID' : '5f9a0e132ed87012457c43f9',
+      'date' : '2020-11-29'
+    })
+    expect(res7.statusCode).toEqual(412)
+    expect(res7.text).toEqual('Error: User not found')
+
+    const res8 = await request
+    .get('/user/getTemporaryConnections?_id=')
+    expect(res8.statusCode).toEqual(412)
+    expect(res8.text).toEqual('Failed: Missing User IDs or invalid')
+
+    const res9 = await request
+    .get('/user/getTemporaryConnections?_id=5f9a0e132ed87012457c43f9')
+    expect(res9.statusCode).toEqual(412)
+    expect(res9.text).toEqual('Error: User not found')
+
+    const res10 = await request
+    .post('/healthStatus/updateHealthStatus')
+    .set('Content-Type', 'application/json')
+    .send({})
+    expect(res10.statusCode).toEqual(412)
+    expect(res10.text).toEqual('Failed: Missing Fields or invalid')
+
+    const res11 = await request
+    .post('/healthStatus/updateHealthStatus')
+    .set('Content-Type', 'application/json')
+    .send({
+      'id' : exampleRuby._id.toString(),
+      'healthStatus' : 'bruh'
+    })
+    expect(res11.statusCode).toEqual(412)
+    expect(res11.text).toEqual('Failed: Missing Fields or invalid')
+
+    const res12 = await request
+    .post('/healthStatus/updateHealthStatus')
+    .set('Content-Type', 'application/json')
+    .send({
+      'id' : '5f9a0e132ed87012457c43f9',
+      'healthStatus' : 'true'
+    })
+    expect(res12.statusCode).toEqual(412)
+    expect(res12.text).toEqual('Error: User not found')
+
+    const res13 = await request
+    .get('/healthStatus/pollHealthStatus?id=')
+    expect(res13.statusCode).toEqual(412)
+    expect(res13.text).toEqual('Failed: Missing Fields or invalid')
+
+    const res14 = await request
+    .get('/healthStatus/pollHealthStatus?id=5f9a0e132ed87012457c43f9')
+    expect(res14.statusCode).toEqual(412)
+    expect(res14.text).toEqual('Error: User not found')
+
+    done()
+  })
+})
 
 afterAll(() => setTimeout(() => process.exit(), 500));
 
