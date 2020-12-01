@@ -253,12 +253,11 @@ class HomeScreen extends React.Component{
     return (
       <View style= {styles.container} >
     <ImageBackground source={image} style={styles.image}>
-    <Image style = {styles.badge} source={badgeImages[this.state.healthStatus]}/> 
+   
     <MenuProvider style={styles.pop}>
     <Menu renderer={Popover}>
       <MenuTrigger style={styles.menuTrigger} >
-
-       <Text>Get Info</Text>
+      <Image style = {styles.badge} source={badgeImages[this.state.healthStatus]}/> 
 
       </MenuTrigger>
       <MenuOptions style={styles.menuOptions}>
@@ -273,7 +272,7 @@ class HomeScreen extends React.Component{
       <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[3]}/></View> 
         <View style={{ width: 120}}><Text>A third connection has COVID-19</Text></View>
       <View style={{ width: 80}}><Image style = {styles.smallbadge} source={badgeImages[4]}/></View> 
-        <View style={{ width: 120}}><Text>No 1st,2nd or 3rd connections have COVID-19</Text></View>
+        <View style={{ width: 120}}><Text>No 1st, 2nd or 3rd connections have COVID-19</Text></View>
         </View>
     </MenuOptions>
 

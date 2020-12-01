@@ -104,14 +104,115 @@ describe('findByQuery', () => {
 describe('findByQuery', () => {
   it('Return no users', async (done) => {
     await userModel.deleteMany({firstName: 'Bruh'});
+
     const res = await request
       .get('/user/findByQuery?firstName=Bruh')
+      .send()
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.length).toEqual(0);
+    console.log(res.body[0])
+    done()
+  })
+})
+
+describe('findAllMatching', () => {
+  it('Return no users', async (done) => {
+
+    const res = await request
+      .get('/user/findAllMatching?searchString=badstring')
       .send()
     expect(res.statusCode).toEqual(200)
     expect(res.body.length).toEqual(0);
     done()
   })
 })
+
+describe('findAllMatching', () => {
+  it('No search string', async (done) => {
+
+    const res = await request
+      .get('/user/findAllMatching')
+      .send()
+    expect(res.statusCode).toEqual(412)
+    expect(res.text).toEqual('Failed: Not given a search string');
+    done()
+  })
+})
+
+describe('findAllMatching', () => {
+  it('Empty search string', async (done) => {
+
+    const res = await request
+      .get('/user/findAllMatching')
+      .send()
+    expect(res.statusCode).toEqual(412)
+    expect(res.text).toEqual('Failed: Not given a search string');
+    done()
+  })
+})
+
+
+describe('findAllMatching', () => {
+  it('Return multiple users matching a basic query', async (done) => {
+    await userModel.deleteMany({firstName: "Ruby"});
+    await userModel.deleteMany({lastName: "Ruby"});
+
+    let userA = await new userModel({firstName: "Ruby", lastName: "Rose", email: "redlikeroses@gmail.com"});
+    await userModel.create(userA); 
+
+    let userB = await new userModel({firstName: "Ruby", lastName: "Gloom", email: "brightsidedarkside@gmail.com"});
+    await userModel.create(userB);
+
+    let userC = await new userModel({firstName: "MaxAnd", lastName: "Ruby", email: "maxnruby@gmail.com"});
+    await userModel.create(userC);
+
+    const res = await request
+      .get('/user/findAllMatching?searchString=rUb')
+      .send()
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.length).toEqual(3);
+
+    expect(res.body[0]).toHaveProperty('lastName')
+    expect(res.body[1]).toHaveProperty('lastName')
+    expect(res.body[2]).toHaveProperty('lastName')
+
+    expect(res.body[0].lastName).toEqual('Rose')
+    expect(res.body[1].lastName).toEqual('Gloom')
+    expect(res.body[2].lastName).toEqual('Ruby')
+
+    done()
+  })
+})
+
+describe('findAllMatching', () => {
+  it('Refine returned user using a more complex query', async (done) => {
+    await userModel.deleteMany({firstName: "Ruby"});
+    await userModel.deleteMany({lastName: "Ruby"});
+
+    let userA = await new userModel({firstName: "Ruby", lastName: "Rose", email: "redlikeroses@gmail.com"});
+    await userModel.create(userA); 
+
+    let userB = await new userModel({firstName: "Ruby", lastName: "Gloom", email: "brightsidedarkside@gmail.com"});
+    await userModel.create(userB);
+
+    let userC = await new userModel({firstName: "MaxAnd", lastName: "Ruby", email: "maxnruby@gmail.com"});
+    await userModel.create(userC);
+
+    const res = await request
+      .get('/user/findAllMatching?searchString=rUb r')
+      .send()
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.length).toEqual(1);
+
+    expect(res.body[0]).toHaveProperty('lastName')
+    expect(res.body[0].lastName).toEqual('Rose')
+
+    done()
+  })
+})
+
 
 /* addFirstConnection - Missing ID Field*/
 describe('addFirstConnection', () => {
