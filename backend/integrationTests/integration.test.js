@@ -98,6 +98,7 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
   it('All Connections of the user will potentially have their healthStatus changed, they can find their new health by polling', async (done) => {
 
     await userModel.deleteMany({firstName: "Ruby"});
+    await userModel.deleteOne({email: "ruby@itest.com"});
     await userModel.deleteOne({firstName: "Yang"});
 
     await userModel.deleteOne({firstName: "Jacob"});  
@@ -218,7 +219,6 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     expect(res6.body._id.toString()).toEqual(exampleBuilder._id.toString())
     expect(res6.body.healthStatus).toEqual(1);
 
-    await console.log(exampleBuilder)
     done()
   })
 })
