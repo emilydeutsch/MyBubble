@@ -283,7 +283,7 @@ class HomeScreen extends React.Component{
         <Text style={styles.text}>First: {this.state.firstList.length}</Text>
         <Text style={styles.text}>Second: {this.state.secondList.length}</Text>
         <Text style={styles.text}>Third: {this.state.thirdList.length}</Text>
-      <View style={styles.button}>
+      <View style={styles.add_button}>
         <Icon.Button testID = 'add'
           name="account-plus"
           backgroundColor="#ACD7CA"
@@ -293,6 +293,8 @@ class HomeScreen extends React.Component{
         >
           Add Connection
         </Icon.Button>
+        </View>
+        <View style={styles.camera_button}>
         <Icon.Button testID = 'camera'
           name="camera-plus"
           backgroundColor="#ACD7CA"
@@ -312,13 +314,20 @@ class HomeScreen extends React.Component{
   };
 
   const styles = StyleSheet.create({
-    button:{
+    add_button:{
       margin: 25,
-      paddingBottom: 10,
+      width: 150,
+      paddingBottom: 0,
+    },
+    camera_button:{
+      margin: 25,
+      width: 150,
+      textAlign: 'right',
+      paddingBottom: 0,
     },
     text:{
-      margin: 25,
-      paddingBottom: 10,
+      margin: 20,
+      paddingBottom: 0,
       fontSize: 35,
       fontWeight: "bold"
     },
