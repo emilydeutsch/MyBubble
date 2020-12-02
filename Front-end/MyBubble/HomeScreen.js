@@ -18,6 +18,13 @@ var badgeImages = [
   require('./images/badge3yellow.png'),
   require('./images/badge4green.png'),
 ];
+
+/**
+ * The main screen once the user has successfully logged in.
+ * Provides navigation to all other pages as well as pertinent
+ * information to the user such as their current health status
+ * and the number of their first, second and third connections.
+ */
 class HomeScreen extends React.Component{
 
   constructor(props) {
@@ -34,8 +41,12 @@ class HomeScreen extends React.Component{
     this.NewNotification = this.NewNotification.bind(this);
   }
 
-  
-
+  /**
+   * When called sends a request to the server to retrieve
+   * all the connections of the current user. Puts all this
+   * information on the home screen so the user can see a 
+   * real time update of their connections.
+   */
   updateConnections = () =>{
     
     //Update the connections
@@ -53,6 +64,11 @@ class HomeScreen extends React.Component{
     });
   }
 
+  /**
+   * When called sends a request to the server to get the
+   * users current health status. Uses this to update the 
+   * users health status on the home page for a live update
+   */
   updateHealth = () =>{
     
     //Update health status
@@ -61,7 +77,7 @@ class HomeScreen extends React.Component{
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      //console.log(responseJson);
+
       this.setState({changed : responseJson.changed});
       this.setState({healthStatus : responseJson.healthStatus});
       GLOBAL.userHealth = responseJson.healthStatus;
@@ -69,13 +85,17 @@ class HomeScreen extends React.Component{
     .catch((error) => {
       console.error(error);
     });
-    //console.log("Did change: ", this.state.changed);
+
     //Send health alert if user status has changed
     if(this.state.changed){
       this.HealthAlert();
     }
   }
 
+  /**
+   * Called when the page loads.
+   * Initializes notifications and permissions
+   */
   componentDidMount(){
     
     PushNotification.createChannel(
@@ -110,10 +130,16 @@ class HomeScreen extends React.Component{
     PushNotification.getChannels(function (channel_ids) {
       console.log(channel_ids); // ['channel_id_1']
     });
+
+    //Calls upon the server for updates every few seconds
     this.interval = setInterval(() => this.updateHealth(), 500);
     this.interval = setInterval(() => this.updateConnections(), 1000);
   }
 
+  /**
+   * Unimplemented secondary notification.
+   * Left in for future expansion to notifications
+   */
   NewNotification(){
     
     PushNotification.localNotification({
@@ -178,6 +204,11 @@ class HomeScreen extends React.Component{
 
   }
 
+  /**
+   * When called sends a notification to the device to 
+   * notify the user one of their connections has updated
+   * their health status
+   */
   HealthAlert(){
     
     PushNotification.localNotification({
@@ -228,6 +259,7 @@ class HomeScreen extends React.Component{
       number: 1, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
       repeatType: "", // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
     });
+    //Send the notification to the device
     PushNotification.popInitialNotification((notification) => {
       console.log('Initial Notification', notification);
     });
@@ -240,6 +272,9 @@ class HomeScreen extends React.Component{
     
   }
 
+  /**
+   * Called when page is cleared
+   */
   componentWillUnmount(){
     clearInterval(this.interval);
   }

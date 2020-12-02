@@ -11,6 +11,12 @@ var badgeImages = [
   require('./images/badge3yellow.png'),
   require('./images/badge4green.png'),
 ];
+
+/**
+ * Screen to display a calender of the current month.
+ * Used so user can add temporary connections in last 
+ * two weeks or anytime in the future
+ */
 class CalendarScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -22,6 +28,11 @@ class CalendarScreen extends React.Component {
     };     
   }
 
+    /**
+     * 
+     * @param {*} req address of the server to send get request
+     * Used to return a list of found users from a search
+     */
   getRequest = (req) =>{
     console.log(req);
     fetch(req, {
@@ -75,16 +86,13 @@ class CalendarScreen extends React.Component {
       markedDates={{
         [this.state.date]: { selected: true },
         }}
-        //maxDate= {Date()}
       theme={{
-        //textSectionTitleColor: '#ACD7CA',
         selectedDayBackgroundColor: '#ACD7CA',
         todayTextColor: '#ACD7CA',
         dotColor: '#ACD7CA',
         selectedDayTextColor: 'white',
         monthTextColor: '#ACD7CA',
         arrowColor: '#ACD7CA',
-        //indicatorColor: '#ACD7CA',
       }}
     />
       <Icon.Button testID = 'add_tmp'
@@ -133,7 +141,6 @@ class CalendarScreen extends React.Component {
       flex: 1,
       resizeMode: "cover",
       justifyContent: "center",
-      //alignItems: 'center',
     },
     item: {
       padding: 10,
