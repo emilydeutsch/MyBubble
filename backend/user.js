@@ -20,6 +20,7 @@ mongoose.connect(mongourl);
 router.put('/newUser', async(req, res) => {
     try {
         userFields = req.body;
+        /* Attempt to create a new user with the given fields */
         user = await new userModel({firstName: userFields.firstName, lastName: userFields.lastName, email: userFields.email});
         await userModel.create(user); 
         res.send(user);
@@ -32,6 +33,7 @@ router.put('/newUser', async(req, res) => {
 
 router.get('/findByQuery', async(req, res) => {
     try {
+        /* Simple find using the query */
         user = await userModel.find(req.query);
         res.json(user);
     }
@@ -51,6 +53,7 @@ router.get('/findAllMatching', async(req, res) => {
     }
     try {
         let searchString = req.query.searchString.toString();
+        /* Split into substrings by spaces */
         let subStrs = searchString.split(" ");
 
         let reg = '';
@@ -65,13 +68,15 @@ router.get('/findAllMatching', async(req, res) => {
         } else {
             reg = subStrs[0]; 
         }
-
+        
         if(subStrs.length <= 1){
+            /* If there is only one substring match first, last or email */
             users = await userModel.find()
             .or([{firstName: { $regex: '^' + reg, $options: 'i'}},
                 {lastName: { $regex: '^' + reg, $options: 'i'}},
                 {email: { $regex: '^' + reg, $options: 'i'}}]);
         } else {
+            /* If there is multiple substrings match we refine the search criteria */
             users = await userModel.find()
             .and([{firstName: { $regex: '^' + reg, $options: 'i'}},
                 {lastName: { $regex: '^' + reg, $options: 'i'}}])
@@ -106,6 +111,7 @@ router.post('/addFirstConnection', async (req, res) => {
             throw err;
         }
 
+        /* Reject already connected users */
         if(firstUser.firstConnections.includes(secondUser._id.toString())){
             let err = new Error('Users already connected');
             throw err;
@@ -117,6 +123,7 @@ router.post('/addFirstConnection', async (req, res) => {
         firstUser.temporaryConnections = await firstUser.temporaryConnections.filter(tc => tc._id.toString() != secondUser._id.toString());
         secondUser.temporaryConnections = await secondUser.temporaryConnections.filter(tc => tc._id.toString() != firstUser._id.toString());
 
+        /* If there is a disparity between healthStatuses for the connected users we change the healthStatuses in the network */
         if(Math.abs(firstUser.healthStatus - secondUser.healthStatus) >= hsConst.differenceLevel.moderate){
             let lowerUser = (firstUser.healthStatus < secondUser.healthStatus) ? firstUser : secondUser;
             let higherUser = (firstUser.healthStatus > secondUser.healthStatus) ? firstUser : secondUser;
@@ -134,10 +141,7 @@ router.post('/addFirstConnection', async (req, res) => {
                 let secondConnections = await networkManager.findSecondConnections(higherUser);
                 await networkManager.updateHealthStatuses(secondConnections, lowerUser.healthStatus + hsConst.connectivityLevel.third); 
             }
-
-            if(firstUser.healthStatus != firstUser.healthStatusOnLastCheck) {
-                firstUser.healthStatusOnLastCheck = firstUser.healthStatus;
-            }
+            
         }
 
         await firstUser.save();
@@ -194,6 +198,8 @@ router.post('/addTemporaryConnection', async (req, res) =>{
         let currDate = new Date();
         let connectionDate = new Date(req.body.date);
         let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
+
+        /* Invalid dates or dates outside the isolation period are rejected */
         if(isNaN(new Date(req.body.date).valueOf()) || dayDiff > hsConst.isolationPeriod) {
             let err = new Error('Date not valid');
             throw err;
@@ -207,11 +213,13 @@ router.post('/addTemporaryConnection', async (req, res) =>{
             throw err;
         }
 
+        /* No point in adding a temp connection for a first level connection */
         if(firstUser.firstConnections.includes(req.body.secondID)){
             let err = new Error('Already a first level connection');
             throw err;
         }
 
+        /* Can't create a temporary connection with the same user multiple times on the same date */
         for(let i = 0; i < firstUser.temporaryConnections.length; i++){
             let connection = firstUser.temporaryConnections[i];
             if(connection._id.toString() == secondUser._id.toString() && connection.date.toString() == req.body.date.toString()){
@@ -259,6 +267,7 @@ router.get('/getTemporaryConnections', async (req, res) => {
         let temporaryConnectionsDetails = [];
 
         let currDate = new Date();
+        /* Filter out temporary connections that are past the isolation period */
         user.temporaryConnections = await user.temporaryConnections.filter((user) => {
             let connectionDate = new Date(user.date);
             let dayDiff = (currDate - connectionDate)/(60 * 60 * 24 * 1000);
@@ -268,6 +277,7 @@ router.get('/getTemporaryConnections', async (req, res) => {
 
         await user.save();
 
+        /* Make a condensed list of information for all temporary connections */
         for(let i = 0; i < user.temporaryConnections.length; i++){
             let connectedUser = (await userModel.find({_id: user.temporaryConnections[i]._id}))[0];
 

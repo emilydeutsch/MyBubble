@@ -475,7 +475,7 @@ describe('A user adds a temporary connection', () => {
 
 /* Bad request tests */
 describe('User attempts to send a bad request or refer to non-existent user', () => {
-  it('Malformed or requests or requests that refer to a non-existent user should be caught and returned with an error', async (done) => {
+  it('Malformed requests or requests that refer to a non-existent user should be caught and returned with an error', async (done) => {
 
     await userModel.deleteMany({firstName: "Ruby"});
     await userModel.deleteOne({firstName: "Jacob"});  

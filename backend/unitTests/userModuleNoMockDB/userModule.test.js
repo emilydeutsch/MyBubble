@@ -414,7 +414,7 @@ describe('addFirstConnection', () => {
     expect(res.body[0]._id.toString()).toEqual(connectedUserA._id.toString())
     expect(res.body[1]._id.toString()).toEqual(connectedUserB._id.toString())
     expect(res.body[0].healthStatus).toEqual(1)
-    expect(res.body[0].healthStatusOnLastCheck).toEqual(1)
+    expect(res.body[0].healthStatusOnLastCheck).toEqual(4)
     expect(res.body[1].healthStatus).toEqual(0)
     done()
   })

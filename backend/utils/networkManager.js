@@ -14,9 +14,15 @@ findAllConnections = async (user) => {
         let secondConnections = [];
         let invalidItems = [];
 
+        /* Invalid items has id's that have already been collected
+         * so we do not double count any users
+         */
         invalidItems.push(user._id.toString());
         invalidItems = invalidItems.concat(firstConnections);
 
+        /* For each level for every user we get their connections then 
+         * filter with the invalid items
+         */
         for(let i = 0; i < firstConnections.length; i++) {
             let id = firstConnections[i];
             let currUser = await userModel.findById(id);
@@ -27,6 +33,7 @@ findAllConnections = async (user) => {
         secondConnections = secondConnections.filter(connection => !invalidItems.includes(connection));
         invalidItems = invalidItems.concat(secondConnections);
 
+        /* Repeat for third level */
         let thirdConnections = [];
         for(let i = 0; i < secondConnections.length; i++) {
             let id = secondConnections[i];
@@ -53,6 +60,10 @@ findSecondConnections = async (user) => {
         invalidItems.push(user._id.toString());
         invalidItems = invalidItems.concat(firstConnections);
 
+        /* For every user we get their connections then 
+         * filter with the ids that are already contained
+         * in the firstConnections to avoid double counting 
+         */
         for(let i = 0; i < firstConnections.length; i++) {
             let id = firstConnections[i];
             let currUser = await userModel.findById(id);
@@ -72,6 +83,10 @@ updateHealthStatuses = async (connections, level) =>{
     try {
         let count = 0;
 
+        /* Goes through all the connections and if the new
+         * healthStatus is lower then their current it is
+         * changed
+         */
         for(let i = 0; i < connections.length; i++){
             let id = connections[i];
             let currUser = await userModel.findById(id);
@@ -91,7 +106,7 @@ updateHealthStatuses = async (connections, level) =>{
 findLowestConnectedHealthStatus = async (connections) => {
     try {
         let lowestConnected = hsConst.riskLevel.none;
-
+        /* Go over all healthStatuses and find the lowest */
         for(let i = 0; i < connections.length; i++){
             let id = connections[i];
             let currUser = await userModel.findById(id);
