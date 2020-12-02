@@ -13,11 +13,20 @@ import {
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 
+/**
+ * Camera page used to add users
+ */
 class CameraScreen extends Component {
+
+  /**
+   * 
+   * @param {*} e the data as a string that was
+   * scanned from the qr code
+   * Takes this data and tries to add the user
+   * associated with the ID, otherwise sends an
+   * alert if the code is invalid
+   */
   onSuccess = (e) => {
-    // Linking.openURL(e.data).catch(err =>
-    //   console.error('An error occured', err)
-    // );
 
     const {navigation} = this.props;
       let userIDs = {
@@ -35,6 +44,16 @@ class CameraScreen extends Component {
 
   };
 
+  /**
+   * 
+   * @param {*} req the server address to send the post request
+   * @param {*} data the data to send in the body of the request
+   * data should be a valid user ID, upon success the user 
+   * associated with that ID is added as a first connection
+   * to the current user. Otherwise an alert is thrown if the ID
+   * is invalid or the users are already connected and the user may
+   * try adain
+   */
   postRequest = (req, data) =>{
     fetch(req, {
       method: 'POST',

@@ -5,12 +5,18 @@ import GLOBAL from './global'
 import QRCode from 'react-native-qrcode-svg';
 
 const image = require('./images/backgroundMain.png');
+
+/**
+ * Screen that contains the user settings. Here user can
+ * update their health status, view their ID and QR code ID.
+ */
 class SettingsScreen extends React.Component{
 
   constructor(props) {
 
     super(props);
 
+    //Keep track of the current users health status
     this.state = {
       
       currentHealth : '',
@@ -19,8 +25,12 @@ class SettingsScreen extends React.Component{
     };      
   }
 
+  /**
+   * Run when this page loads
+   * Updates user's health status for the current session
+   */
   componentDidMount(){
-    //Get health upon start
+    //Update the users health from the server upon start
     fetch(GLOBAL.serverURL + '/healthStatus/pollHealthStatus?id=' + GLOBAL.userID, {
       method: 'GET'
     })
@@ -33,7 +43,7 @@ class SettingsScreen extends React.Component{
       console.error(error);
     });
 
-    
+    //Update text according to health
     if(GLOBAL.userHealth == 0){
       this.setState({currentHealth : 'have covid'});
       this.setState({healthState : 1});
@@ -44,9 +54,13 @@ class SettingsScreen extends React.Component{
     console.log("Current Health: ", GLOBAL.userHealth);
   }
 
+  /**
+   * 
+   * @param {*} selected the element selected fromm the list
+   * to update the health status
+   */
   updateStatus = (selected) =>{
 
-    //this.setState({currentHealth : selected});
     console.log("Selection: ", selected);
     console.log("current Health: ", this.state.currentHealth);
     let data = {
@@ -86,6 +100,7 @@ class SettingsScreen extends React.Component{
   }
 
   render(){
+    //Possible health options
     var healthState = [['healthy', 'covid']];
     return (
       
@@ -98,19 +113,21 @@ class SettingsScreen extends React.Component{
                   height : 70,
                   width : 300,}}
                   
-        //onValueChange={(selection, row) => this.updateStatus(selection, row, healthState)}
         onValueChange={(itemValue, itemIndex) => this.updateStatus(itemIndex)}
         selectedValue={healthState[0][this.state.healthState]}
         >
           <Picker.Item label = "healthy" value= 'healthy'/>
           <Picker.Item label = "covid" value= 'covid'/>   
         </Picker>
-        <Text>You currently {this.state.currentHealth}</Text>
+        <Text style={styles.healthText}>You currently {this.state.currentHealth}</Text>
 
-        <Text>Your MyBubble ID</Text>
+        <Text style={styles.idText}>Your MyBubble ID:</Text>
+        <Text style={styles.idText}>{GLOBAL.userID}</Text>
+        <View style={styles.qr}>
         <QRCode
           value = {GLOBAL.userID.toString()}
         />
+        </View>
         </ImageBackground>
       </View>
     );
@@ -126,6 +143,16 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontSize: 35,
     fontWeight: "bold"
+  },
+  healthText:{
+    paddingBottom:100,
+  },
+  idText:{
+    paddingBottom:20,
+    fontWeight: "bold"
+  },
+  qr:{
+    paddingBottom:20,
   },
   container: {
     flex: 1,

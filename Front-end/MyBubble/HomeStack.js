@@ -6,6 +6,11 @@ import HomeScreen from './HomeScreen';
 import SearchScreen from './SearchScreen';
 import CameraScreen from './CameraScreen';
 
+/**
+ * Setup the navigation stack to navigate
+ * between other main components. These are
+ * the camera and search screen
+ */
 const Stack = createStackNavigator();
 const HomeStack = () => {
   return (

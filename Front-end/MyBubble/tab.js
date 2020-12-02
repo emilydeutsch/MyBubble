@@ -10,6 +10,9 @@ import HomeStack from './HomeStack';
 import CalendarStack from './CalendarStack';
 
 const Tab = createBottomTabNavigator();
+/**
+ * Setup the bottom screen tab navigator
+ */
 const TabScreen = () => {
     return (
         <NavigationContainer>

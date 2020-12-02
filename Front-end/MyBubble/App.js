@@ -8,6 +8,11 @@ import TabScreen from './tab';
 //blue tint colour =#ACD7CA
 const Stack = createStackNavigator();
 const image = require('./images/background.png');
+
+/**
+ * Start of app after entry. Loads google auth and handles
+ * logging in.
+ */
 const App = () => {const [user, setUser] = useState({})
 
 GLOBAL.userID = this;
@@ -18,8 +23,6 @@ GLOBAL.serverURL = 'http://52.152.138.4:8080';
 var doPut = false;
 
 useEffect(() => {
-
-
     GoogleSignin.configure({
       webClientId: '391210473174-j4bfvv60i9tgfaf1njmg5ud92rvtdbmt.apps.googleusercontent.com',
       offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
@@ -32,7 +35,7 @@ useEffect(() => {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       setUser(userInfo)
-      //enter here a find email request
+
       const email = userInfo.user.email;
       const lastName = userInfo.user.familyName;
       const firstName = userInfo.user.givenName;
@@ -41,7 +44,8 @@ useEffect(() => {
       console.log(email);
       console.log(lastName);
       console.log(firstName);
-      //change to email 
+
+      //Check if user is stored in the database already
       const request = GLOBAL.serverURL + '/user/findByQuery?email='.concat(email);
       fetch(request, {
         method: 'GET',
@@ -56,10 +60,9 @@ useEffect(() => {
                         "lastName"  :lastName,
                         "email"     :email
           }
-            //data.firstName = firstName;
-            //data.lastName = lastName;
-            //data.email = email;
+
             console.log("We put");
+            //If user is not in database add them
             const request2 = GLOBAL.serverURL + '/user/newUser';
             fetch(request2, {
               method: 'PUT',
@@ -103,6 +106,10 @@ useEffect(() => {
       }
     }
   };
+
+  /**
+   * Checks if the user is signed in
+   */
   const isSignedIn = async () => {
     const isSignedIn = await GoogleSignin.isSignedIn();
     if (!!isSignedIn) {
@@ -111,13 +118,18 @@ useEffect(() => {
       console.log('Please Login')
     }
   };
+
+  /**
+   * Gets users info from google server. We save
+   * only the users email and name
+   */
   const getCurrentUserInfo = async () => {
     try {
       const userInfo = await GoogleSignin.signInSilently();
       setUser(userInfo);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        //alert('User has not signed in yet');
+
         console.log('User has not signed in yet');
       } else {
         alert("Something went wrong. Unable to get user's info");
@@ -125,6 +137,11 @@ useEffect(() => {
       }
     }
   };
+
+  /**
+   * Logs the user out of the current google auth session.
+   * Currently unused.
+   */
   const signOut = async () => {
     try {
       await GoogleSignin.revokeAccess();

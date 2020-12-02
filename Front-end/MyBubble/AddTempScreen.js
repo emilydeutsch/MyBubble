@@ -17,6 +17,10 @@ const ItemSeparatorView = () => {
   );
 };
 
+/**
+ * Screen for searching users to add as a temporary
+ * connection
+ */
 class AddTempScreen extends React.Component {
   
   constructor(props) {
@@ -24,6 +28,7 @@ class AddTempScreen extends React.Component {
       super(props);
       this.addSelection = this.addSelection.bind(this);
 
+      //Keep track of search states
       this.state = {
         searchResult : '',
         dataName : '',
@@ -33,7 +38,14 @@ class AddTempScreen extends React.Component {
       };     
    
     }
-    
+
+    /**
+     * 
+     * @param {*} item the item data from the flatlist
+     * @param {*} index the index of the item in the flatlist
+     * When called the item pressed has its ID taken and sent
+     * to the server to be added as a connection
+     */
     addSelection =(item, index) =>{
       const {navigation} = this.props;
       const {route} = this.props;
@@ -53,11 +65,17 @@ class AddTempScreen extends React.Component {
       console.log("date: " + userIDs.date);
       var req = GLOBAL.serverURL + '/user/addTemporaryConnection';
 
-      this.putRequest(req,userIDs);
+      this.postRequest(req,userIDs);
       navigation.navigate('Calendar');
       }
 
-    putRequest = (req, data) =>{
+    /**
+     * 
+     * @param {*} req address of the server for the post request
+     * @param {*} data the data in the body of the post request
+     * data should be a valid user ID to add to the server
+     */
+    postRequest = (req, data) =>{
       fetch(req, {
         method: 'POST',
         headers: {
@@ -81,6 +99,11 @@ class AddTempScreen extends React.Component {
       });
     }
 
+    /**
+     * 
+     * @param {*} req address of the server to send get request
+     * Used to return a list of found users from a search
+     */
     getRequest = (req) =>{
       console.log(req);
       fetch(req, {
@@ -90,7 +113,7 @@ class AddTempScreen extends React.Component {
       .then((responseJson) => {
         console.log("GET response: " + responseJson);
         if((responseJson || []).length === 0){
-          //this.setState({searchResult : ['Not Found']});
+
           alert("User Not Found");
         }else{
           var nameArr = [];
@@ -114,8 +137,16 @@ class AddTempScreen extends React.Component {
       });
     }
     
+    /**
+     * 
+     * @param {*} text the text to submit for searching
+     * Text should be a valid name, containing letters, spaces
+     * and dashes. If not throws an alert so the user can try
+     * again
+     */
     searchSubmit = (text) => {
 
+      //Regex for valid strings
       if(/^[A-Za-z\s\-]+$/.test(text)){
       
         const request = GLOBAL.serverURL+'/user/findAllMatching?searchString='+text;
@@ -123,10 +154,6 @@ class AddTempScreen extends React.Component {
         this.getRequest(request);
         console.log("request: " + request);
         console.log("request data: " + this.state.data);
-
-        //this.setState({dataName : text});
-        
-        {/* Enter code here for searching database using text string */}
 
         this.setState({searchResult : this.state.dataName});
         
@@ -136,6 +163,11 @@ class AddTempScreen extends React.Component {
       }
     }
 
+    /**
+     * 
+     * @param {*} obj object to check
+     * Checks if the object is empty
+     */
     isEmpty =(obj) =>{
       for(var prop in obj){
         if(obj.hasOwnProperty(prop)){
