@@ -9,7 +9,7 @@ import CalendarScreen from './CalendarScreen';
 /**
  * Set up the navigation stack for the 
  * calendar to travel between the calendar
- * and the add connections page
+ * and the add connections page 
  */
 const Stack = createStackNavigator();
 const HomeStack = () => {
