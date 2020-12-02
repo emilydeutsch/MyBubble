@@ -17,6 +17,7 @@ mongoose.connect('mongodb://localhost/mybubbletest-2');
 describe('User adds friend as first connection', () => {
   it('Friend cannot be added multiple times, you can find eachother\'s connections and healthStatuses are updated accordingly', async (done) => {
 
+    /* Manually create a small network */
     await userModel.deleteOne({firstName: "Ruby"});
     await userModel.deleteOne({firstName: "Yang"});
 
@@ -52,6 +53,7 @@ describe('User adds friend as first connection', () => {
     await exampleTaker.save();
     await exampleBuilder.save();
 
+    /* A connection is formed between two unconnected users */
     const res1 = await request
     .post('/user/addFirstConnection')
     .set('Content-Type', 'application/json')
@@ -67,6 +69,7 @@ describe('User adds friend as first connection', () => {
     expect(res1.body[0]._id.toString()).toEqual(exampleJacob._id.toString())
     expect(res1.body[1]._id.toString()).toEqual(exampleTaker._id.toString())
 
+    /* Attempt to connect two already connected users */
     const res2 = await request
     .post('/user/addFirstConnection')
     .set('Content-Type', 'application/json')
@@ -78,6 +81,7 @@ describe('User adds friend as first connection', () => {
     expect(res2.statusCode).toEqual(412)
     expect(res2.text).toEqual('Error: Users already connected')
     
+    /* we get all connections of a user */
     const res3 = await request
       .get('/user/getAllConnections?_id=' + exampleTaker._id.toString())
       .send()
@@ -86,9 +90,18 @@ describe('User adds friend as first connection', () => {
     expect(res3.body).toHaveProperty('firstConnections')
     expect(res3.body).toHaveProperty('secondConnections')
     expect(res3.body).toHaveProperty('thirdConnections')
+
     expect(res3.body.firstConnections.includes(exampleJacob._id.toString())).toEqual(true)
+    expect(!res3.body.secondConnections.includes(exampleJacob._id.toString())).toEqual(true)
+    expect(!res3.body.thirdConnections.includes(exampleJacob._id.toString())).toEqual(true)
+
     expect(res3.body.secondConnections.includes(exampleRuby._id.toString())).toEqual(true)
+    expect(!res3.body.firstConnections.includes(exampleRuby._id.toString())).toEqual(true)
+    expect(!res3.body.thirdConnections.includes(exampleRuby._id.toString())).toEqual(true)
+
     expect(res3.body.thirdConnections.includes(exampleYang._id.toString())).toEqual(true)
+    expect(!res3.body.secondConnections.includes(exampleYang._id.toString())).toEqual(true)
+    expect(!res3.body.firstConnections.includes(exampleYang._id.toString())).toEqual(true)
     done()
   })
 })
@@ -97,6 +110,7 @@ describe('User adds friend as first connection', () => {
 describe('User changes their healthStatus to infected w/ Covid-19', () => {
   it('All Connections of the user will potentially have their healthStatus changed, they can find their new health by polling', async (done) => {
 
+    /* Make a small network with some connected users */
     await userModel.deleteMany({firstName: "Ruby"});
     await userModel.deleteOne({email: "ruby@itest.com"});
     await userModel.deleteOne({firstName: "Yang"});
@@ -136,6 +150,7 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     await exampleTaker.save();
     await exampleBuilder.save();
 
+    /* Someone in network updates their healthStatus */
     const res1 = await request
     .post('/healthStatus/updateHealthStatus')
     .set('Content-Type', 'application/json')
@@ -150,6 +165,7 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     expect(res1.body._id.toString()).toEqual(exampleBuilder._id.toString())
     expect(res1.body.healthStatus).toEqual(0);
 
+    /* Affected user polls their healthStatus */
     const res2 = await request
       .get('/healthStatus/pollHealthStatus?id=' + exampleTaker._id.toString())
       .send({});
@@ -160,7 +176,7 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     expect(res2.body.changed).toEqual(true)
     expect(res2.body.healthStatus).toEqual(1)
     
-
+    /* Unaffected user polls their healthStatus */
    const res3 = await request
       .get('/healthStatus/pollHealthStatus?id=' + exampleYang._id.toString())
       .send({});
@@ -170,7 +186,8 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     expect(res3.body).toHaveProperty('healthStatus')
     expect(res3.body.changed).toEqual(false)
     expect(res3.body.healthStatus).toEqual(4)
-   
+    
+   /* A currently sick user asserts they are now healthy */
     const res4 = await request
     .post('/healthStatus/updateHealthStatus')
     .set('Content-Type', 'application/json')
@@ -185,26 +202,29 @@ describe('User changes their healthStatus to infected w/ Covid-19', () => {
     expect(res4.body._id.toString()).toEqual(exampleBuilder._id.toString())
     expect(res4.body.healthStatus).toEqual(2);
 
-    const res5 = await request
-    .post('/healthStatus/updateHealthStatus')
-    .set('Content-Type', 'application/json')
-    .send({
-      'id': exampleBuilder._id.toString(),
-      'healthStatus' : false
-    });
+   /* A currently not sick user asserts they are now healthy */
+   const res5 = await request
+   .post('/healthStatus/updateHealthStatus')
+   .set('Content-Type', 'application/json')
+   .send({
+     'id': exampleBuilder._id.toString(),
+     'healthStatus' : false
+   });
 
-    expect(res5.statusCode).toEqual(200)
-    expect(res5.body).toHaveProperty('healthStatus');
-    expect(res5.body).toHaveProperty('_id');
-    expect(res5.body._id.toString()).toEqual(exampleBuilder._id.toString())
-    expect(res5.body.healthStatus).toEqual(2);
+   expect(res5.statusCode).toEqual(200)
+   expect(res5.body).toHaveProperty('healthStatus');
+   expect(res5.body).toHaveProperty('_id');
+   expect(res5.body._id.toString()).toEqual(exampleBuilder._id.toString())
+   expect(res5.body.healthStatus).toEqual(2);
 
+    /* Manually set some people to sick */
     exampleBuilder.healthStatus = 0;
     exampleTaker.healthStatus = 0;
 
     await exampleBuilder.save();
     await exampleTaker.save();
 
+    /* Formerly sick user sets themselves to healthy */
     const res6 = await request
     .post('/healthStatus/updateHealthStatus')
     .set('Content-Type', 'application/json')
@@ -229,6 +249,7 @@ describe('User signs up for the first time', () => {
 
     await userModel.deleteOne({firstName: "Ruby"});    
 
+    /* Create a new user */
     const res1 = await request
     .put('/user/newUser')
     .set('Content-Type', 'application/json')
@@ -246,6 +267,7 @@ describe('User signs up for the first time', () => {
     expect(res1.body.firstName).toEqual("Ruby");
     expect(res1.body.healthStatus).toEqual(4);
 
+    /* Get the health status of the new user */
     const res2 = await request
       .get('/healthStatus/pollHealthStatus?id=' + res1.body._id.toString())
       .send({});
@@ -256,6 +278,7 @@ describe('User signs up for the first time', () => {
     expect(res2.body.changed).toEqual(false)
     expect(res2.body.healthStatus).toEqual(4)
 
+    /* Attempt to create another user with the same email */
     const res3 = await request
     .put('/user/newUser')
     .set('Content-Type', 'application/json')
@@ -282,6 +305,7 @@ describe('Searching for an existing user', () => {
     let exampleRuby = await new userModel({firstName: "Ruby", lastName: "Rose", email: "ruby@itest.com"});
     await userModel.create(exampleRuby);
 
+    /* Search by firstName */
     const res = await request
       .get('/user/findByQuery?firstName=Ruby')
       .send()
@@ -290,6 +314,7 @@ describe('Searching for an existing user', () => {
     expect(res.body[0]).toHaveProperty('_id');
     expect(res.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
 
+    /* Search by lastName */
     const res2 = await request
       .get('/user/findByQuery?lastName=Rose')
       .send()
@@ -298,6 +323,7 @@ describe('Searching for an existing user', () => {
     expect(res2.body[0]).toHaveProperty('_id');
     expect(res2.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
 
+    /* Search by email */
     const res3 = await request
       .get('/user/findByQuery?email=ruby@itest.com')
       .send()
@@ -306,6 +332,7 @@ describe('Searching for an existing user', () => {
     expect(res3.body[0]).toHaveProperty('_id');
     expect(res3.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
 
+    /* Search by _id */
     const res4 = await request
       .get('/user/findByQuery?_id=' + exampleRuby._id.toString())
       .send()
@@ -314,6 +341,7 @@ describe('Searching for an existing user', () => {
     expect(res4.body[0]).toHaveProperty('_id');
     expect(res4.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
 
+    /* Match to a simple regex */
     const res5 = await request
     .get('/user/findAllMatching?searchString=ru')
     .send()
@@ -322,6 +350,7 @@ describe('Searching for an existing user', () => {
     expect(res5.body[0]).toHaveProperty('_id');
     expect(res5.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
 
+    /* Match to a more complex regex */
     const res6 = await request
     .get('/user/findAllMatching?searchString=ru Ro')
     .send()
@@ -337,6 +366,7 @@ describe('Searching for an existing user', () => {
 describe('A user adds a temporary connection', () => {
   it('can add connections within isolation period, and get connections within isolation period', async (done) => {
 
+    /* Setup some users */
     await userModel.deleteOne({firstName: "Ruby"});
     await userModel.deleteOne({firstName: "Yang"});
 
@@ -352,7 +382,7 @@ describe('A user adds a temporary connection', () => {
     await userModel.create(exampleYang);
     await userModel.create(exampleJacob);
     
-
+    /* manually create an outdated temporary connection */
     let tempConnectionForRuby = {_id: exampleYang._id.toString(), date: '2020-11-1'}
     let tempConnectionForYang = {_id: exampleRuby._id.toString(), date: '2020-11-1'}
 
@@ -362,6 +392,7 @@ describe('A user adds a temporary connection', () => {
     exampleRuby.save()
     exampleYang.save();
 
+    /* Standard  add temp connection */
     const res = await request
       .post('/user/addTemporaryConnection')
       .set('Content-Type', 'application/json')
@@ -379,6 +410,7 @@ describe('A user adds a temporary connection', () => {
       expect(res.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
       expect(res.body[1]._id.toString()).toEqual(exampleYang._id.toString())
   
+      /* Attempt to make another connection with the same user on the same date */
       const res2 = await request
       .post('/user/addTemporaryConnection')
       .set('Content-Type', 'application/json')
@@ -391,7 +423,7 @@ describe('A user adds a temporary connection', () => {
       expect(res2.statusCode).toEqual(412)
       expect(res2.text).toEqual('Error: Already a temporary connection on this date')
       
-
+      /* Make a connection with the same user on a different date */
       const res3 = await request
       .post('/user/addTemporaryConnection')
       .set('Content-Type', 'application/json')
@@ -409,6 +441,7 @@ describe('A user adds a temporary connection', () => {
       expect(res3.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
       expect(res3.body[1]._id.toString()).toEqual(exampleYang._id.toString())
 
+      /* Make a connection with a different user on the same date */
       const res4 = await request
       .post('/user/addTemporaryConnection')
       .set('Content-Type', 'application/json')
@@ -426,6 +459,7 @@ describe('A user adds a temporary connection', () => {
       expect(res4.body[0]._id.toString()).toEqual(exampleRuby._id.toString())
       expect(res4.body[1]._id.toString()).toEqual(exampleJacob._id.toString())
 
+      /* Make an outdated connection */
       const res5 = await request
       .post('/user/addTemporaryConnection')
       .set('Content-Type', 'application/json')
@@ -438,6 +472,7 @@ describe('A user adds a temporary connection', () => {
       expect(res5.statusCode).toEqual(412)
       expect(res5.text).toEqual('Error: Date not valid')
 
+    /* Users gets their temporary connections */
     const res6 = await request
       .get('/user/getTemporaryConnections?_id=' + exampleRuby._id.toString())
       .send()
@@ -445,18 +480,21 @@ describe('A user adds a temporary connection', () => {
     expect(res6.statusCode).toEqual(200)
     expect(res6.body.length).toEqual(3)
 
+    /* Old temporaray connection has been filtered out */
     for(let i = 0; i < res.body.length; i++){
       expect(res6.body[i]).toHaveProperty('_id')
       expect(res6.body[i]).toHaveProperty('date')
       expect(res6.body[i].date == '2020-11-1').toEqual(false)
     }
 
+    /* Manually connect two users */
     exampleRuby.firstConnections.push(exampleJacob._id.toString());
     exampleJacob.firstConnections.push(exampleRuby._id.toString());
 
     exampleRuby.save();
     exampleJacob.save();
 
+    /* Attempt to make a temporary connection with two users that are already a first connection */
     const res7 = await request
       .post('/user/addTemporaryConnection')
       .set('Content-Type', 'application/json')
@@ -488,6 +526,7 @@ describe('User attempts to send a bad request or refer to non-existent user', ()
 
     await userModel.create(exampleJacob);
 
+    /* Run a big list of various malformed requests */
 
     const res1 = await request
     .post('/user/addFirstConnection')

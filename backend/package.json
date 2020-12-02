@@ -4,7 +4,7 @@
   "description": "My Bubble backend code",
   "main": "server.js",
   "scripts": {
-    "test": "jest --coverage ./unitTests/UserModuleNoMockDB",
+    "test": "jest --coverage ./integrationTests",
     "start": "node server.js"
   },
   "author": "",

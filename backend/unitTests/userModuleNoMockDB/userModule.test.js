@@ -298,7 +298,6 @@ describe('addFirstConnection', () => {
   })
 })
 
-/* findByQuery - Bad User Fields */
 describe('newUser', () => {
   it('User missing firstName', async (done) => {
     const res = await request
@@ -315,7 +314,7 @@ describe('newUser', () => {
   })
 })
 
-/* findByQuery - Bad User Fields */
+
 describe('newUser', () => {
   it('Creating new User successful', async (done) => {
     await userModel.deleteMany({email: 'faker@gmail.com'}); 
@@ -524,7 +523,6 @@ describe('addTemporaryConnection', () => {
 describe('addTemporaryConnection', () => {
   it('already a first connection', async (done) => {
     
-
     let date = new Date()
 
     await userModel.deleteOne({firstName: "Example A"});
